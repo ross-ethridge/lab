@@ -49,7 +49,7 @@ ssh-keygen -f packer-build-key -b 4096 -t rsa
 ```bash
 ssh-keygen -s ssh_host_ca -I packer@buildserver -n packer -V +1d packer-build-key.pub
 
-Signed user key packer-build-key-cert.pub: id "packer@buildserver.infra.bwi" serial 0 for packer valid from 2025-03-08T11:23:00 to 2025-03-09T12:24:08
+Signed user key packer-build-key-cert.pub: id "packer@buildserver" serial 0 for packer valid from 2025-03-08T11:23:00 to 2025-03-09T12:24:08
 ```
 
 3. You can use the ```-L``` flag to list the certificate details.
