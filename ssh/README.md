@@ -61,7 +61,7 @@ packer-build-key-cert.pub:
         Type: ssh-rsa-cert-v01@openssh.com user certificate
         Public key: RSA-CERT SHA256:fmEFJJxkAYa389ckXgnbk2tmT45ow2gRk8a3Mv69ik0
         Signing CA: RSA SHA256:slohp1o9UUFReRJoKPjwAZ4jLrEDkNLpD3Jm0MrsH2g (using rsa-sha2-512)
-        Key ID: "packer@buildserver.infra.bwi"
+        Key ID: "packer@buildserver"
         Serial: 0
         Valid: from 2025-03-08T11:23:00 to 2025-03-09T12:24:08
         Principals:
