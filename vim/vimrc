@@ -11,7 +11,9 @@ set shiftwidth=2
 set expandtab
 
 " Highlight trailing whitespace in all files
-autocmd BufRead,BufNewFile * match Error /\s\+s/
+" autocmd BufRead,BufNewFile * match Error /\s\+s/
+set list
+set listchars=trail:~,tab:»·,nbsp:%
 
 " Enable auto-indentation
 set autoindent
