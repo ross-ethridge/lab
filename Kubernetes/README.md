@@ -45,14 +45,37 @@ kubectl create namespace mealie --dry-run=client -o yaml | tee namespace.yaml
 apiVersion: v1
 kind: Namespace
 metadata:
-  creationTimestamp: null
   name: mealie
-spec: {}
-status: {}
 ```
-To set you context to the namespace that you are working in:
+- To set you context to the namespace that you are working in:
 ```bash
 kubectl config set-context --current --namespace=mealie
+```
+- To ```view``` your working namespace context:  
+
+```bash
+kubectl config view
+
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: DATA+OMITTED
+    server: https://127.0.0.1:6443
+  name: rancher-desktop
+contexts:
+- context:
+    cluster: rancher-desktop
+    namespace: mealie
+    user: rancher-desktop
+  name: rancher-desktop
+current-context: rancher-desktop
+kind: Config
+preferences: {}
+users:
+- name: rancher-desktop
+  user:
+    client-certificate-data: DATA+OMITTED
+    client-key-data: DATA+OMITTED
 ```
 
 ## Deployments
@@ -83,6 +106,31 @@ spec:
         - image: ghcr.io/mealie-recipes/mealie:v1.2.0
           name: mealie
           ports:
-            - containerport: 9000
-
+            - containerPort: 9000
 ```
+- Deploy this deployment:
+```bash
+kubectl apply -f mealie-deploy.yaml
+
+deployment.apps/mealie created
+```
+- Check your deployment:
+```bash
+kubectl get pods
+
+NAME                      READY   STATUS    RESTARTS   AGE
+mealie-5479dbb894-72xvc   1/1     Running   0          27s
+```
+## Port Forwarding cheat for a quick test
+- This method is not for production use as you have to keep the terminal for this test.
+
+```bash
+kubectl port-forward pods/mealie-5479dbb894-72xvc 9000
+
+Forwarding from 127.0.0.1:9000 -> 9000
+Forwarding from [::1]:9000 -> 9000
+Handling connection for 9000
+Handling connection for 9000
+Handling connection for 9000
+```
+
