@@ -10,3 +10,4 @@ spec:
   containers:
   - image: nginx
     name: nginx-yaml
+    replicas: 10

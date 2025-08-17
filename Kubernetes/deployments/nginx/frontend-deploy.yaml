@@ -3,20 +3,20 @@ kind: Deployment
 metadata:
   creationTimestamp: null
   labels:
-    app: mealie
-  name: mealie
-  namespace: mealie
+    app: frontend
+  name: frontend
+  namespace: default
 spec:
-  replicas: 1
+  replicas: 10
   selector:
     matchLabels:
-      app: mealie
+      app: frontend
   strategy: {}
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: mealie
+        app: frontend
     spec:
       containers:
       - image: nginx
