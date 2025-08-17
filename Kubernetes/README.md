@@ -121,10 +121,11 @@ deployment.apps/mealie created
 ```
 - Check your deployment:
 ```bash
-kubectl get pods
+kubectl get deployments.apps
 
-NAME                      READY   STATUS    RESTARTS   AGE
-mealie-5479dbb894-72xvc   1/1     Running   0          27s
+NAME     READY   UP-TO-DATE   AVAILABLE   AGE
+mealie   1/1     1            1           17h
+
 ```
 ### Port forwarding cheat for a quick test
 - This method is not for production use as you have to keep the command running in terminal for this test.
@@ -213,5 +214,3 @@ service/mealie created
 - Listens for HTTP or HTTPS
 - Ingress controllers contain a route to a service endpoint.
 - The service endpoint routes the request to the pod.
-
-
