@@ -16,7 +16,7 @@ kubectl run nginx-ross --image=nginx
 ### Generatting base YAML for pods
 Rather than start from scratch, you can output a dry run to get started:
 ```bash
-kubectl run nginx-yaml --image=nginx --dry-run=client -o yaml
+kubectl run nginx-yaml --image=nginx --dry-run=client -o yaml | tee pod.yaml
 
 apiVersion: v1
 kind: Pod
@@ -27,21 +27,40 @@ metadata:
   name: nginx-yaml
 spec:
   containers:
-  - image: nginx
-    name: nginx-yaml
-    resources: {}
+    - image: nginx
+      name: nginx-yaml
+      resources: {}
   dnsPolicy: ClusterFirst
   restartPolicy: Always
 status: {}
+```
+
+## Namespaces
+In Kubernetes, namespaces provide a mechanism for isolating groups of resources within a single cluster. Names of resources need to be unique within a namespace, but not across namespaces.
+Applications should have their own namespace as a good design pattern.
+Think of this as a logical grouping.
+```bash
+kubectl create namespace mealie --dry-run=client -o yaml | tee namespace.yaml
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: null
+  name: mealie
+spec: {}
+status: {}
+```
+To set you context to the namespace that you are working in:
+```bash
+kubectl config set-context --current --namespace=mealie
 ```
 
 ## Deployments
 A Deployment manages a set of Pods to run an application workload, usually one that doesn't maintain state.
 A Deployment provides declarative updates for Pods and ReplicaSets.
 You describe a desired state in a Deployment, and the Deployment Controller changes the actual state to the desired state at a controlled rate.
+```bash
+kubectl create deployment mealie --image=nginx --replicas=1 --namespace=mealie --dry-run=client -o yaml | tee deploy.yaml
 
-## Namespaces
-In Kubernetes, namespaces provide a mechanism for isolating groups of resources within a single cluster. Names of resources need to be unique within a namespace, but not across namespaces.
-Applications should have their own namespace as a good design pattern.
-Think of this as a logical grouping.
 
+```
