@@ -36,3 +36,12 @@ status: {}
 ```
 
 ## Deployments
+A Deployment manages a set of Pods to run an application workload, usually one that doesn't maintain state.
+A Deployment provides declarative updates for Pods and ReplicaSets.
+You describe a desired state in a Deployment, and the Deployment Controller changes the actual state to the desired state at a controlled rate.
+
+## Namespaces
+In Kubernetes, namespaces provide a mechanism for isolating groups of resources within a single cluster. Names of resources need to be unique within a namespace, but not across namespaces.
+Applications should have their own namespace as a good design pattern.
+Think of this as a logical grouping.
+

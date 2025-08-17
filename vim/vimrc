@@ -26,3 +26,6 @@ set backspace=indent,eol,start
 
 " Turn on line numbering
 set number
+
+" Make paste work correctly
+set paste
