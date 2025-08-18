@@ -7,7 +7,7 @@
 - https://kubernetes.io/docs/concepts/containers/
 - You typically would not use Kube to just run a single container, but you can still do it:
 ```bash
-kubectl run nginx-ross --image=nginx
+# kubectl run nginx-ross --image=nginx
 ```
 ## Control Plane
 - https://kubernetes.io/docs/concepts/architecture/control-plane-node-communication/
@@ -24,11 +24,10 @@ Pods are the smallest element in Kubernetes. Pods are not containers, they are a
 - All of the pod members containers share the same storage.
 - It is not possible to directly add or remove regular containers from a running Kubernetes Pod. Once a Pod is created, its container configuration is immutable. Kubernetes treats a Pod as a single unit, and all containers within a Pod are intended to run together. Modify the higher level ```deployment spec``` to add or remove containers. 
 
-### Generatting base YAML for pods
+### Generating base YAML for pods
 Rather than start from scratch, you can output a dry run to get started:
 ```bash
-kubectl run nginx-yaml --image=nginx --dry-run=client -o yaml | tee pod.yaml
-
+# kubectl run nginx-yaml --image=nginx --dry-run=client -o yaml | tee pod.yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -55,24 +54,23 @@ In Kubernetes, namespaces provide a mechanism for isolating groups of resources 
 Applications should have their own namespace as a good design pattern.
 Think of this as a logical grouping.
 ```bash
-kubectl create namespace mealie --dry-run=client -o yaml | tee namespace.yaml
-
+# kubectl create namespace mealie --dry-run=client -o yaml | tee namespace.yaml
 apiVersion: v1
 kind: Namespace
 metadata:
   name: mealie
 
-kubectl apply -f namespace.yaml
+#kubectl apply -f namespace.yaml
 namespace/mealie configured
 ```
 - To set you context to the namespace that you are working in:
 ```bash
-kubectl config set-context --current --namespace=mealie
+# kubectl config set-context --current --namespace=mealie
 ```
 - To ```view``` your working namespace context:  
 
 ```bash
-kubectl config view
+# kubectl config view
 
 apiVersion: v1
 clusters:
@@ -103,8 +101,7 @@ A Deployment manages a set of Pods to run an application workload, usually one t
 A Deployment provides declarative updates for Pods and ReplicaSets.
 You describe a desired state in a Deployment, and the Deployment Controller changes the actual state to the desired state at a controlled rate.
 ```bash
-kubectl create deployment mealie --image=nginx --replicas=1 --namespace=mealie --dry-run=client -o yaml | tee mealie-deploy.yaml
-
+# kubectl create deployment mealie --image=nginx --replicas=1 --namespace=mealie --dry-run=client -o yaml | tee mealie-deploy.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -130,14 +127,12 @@ spec:
 ```
 - Deploy this deployment:
 ```bash
-kubectl apply -f mealie-deploy.yaml
-
+# kubectl apply -f mealie-deploy.yaml
 deployment.apps/mealie created
 ```
 - Check your deployment:
 ```bash
-kubectl get deployments.apps
-
+# kubectl get deployments.apps
 NAME     READY   UP-TO-DATE   AVAILABLE   AGE
 mealie   1/1     1            1           17h
 
@@ -147,8 +142,7 @@ mealie   1/1     1            1           17h
 - This method is not for production use as you have to keep the command running in terminal for this test.
 
 ```bash
-kubectl port-forward pods/mealie-5479dbb894-72xvc 9000
-
+# kubectl port-forward pods/mealie-5479dbb894-72xvc 9000
 Forwarding from 127.0.0.1:9000 -> 9000
 Forwarding from [::1]:9000 -> 9000
 Handling connection for 9000
@@ -170,8 +164,7 @@ Handling connection for 9000
 - Assigns IP addresses and sets up routing --> Iptables on nodes.
 - You can examine ```/etc/cni/net.d``` directory on a node to tell which CNI plugin you are using:
 ```bash
-lima-rancher-desktop:/# tree /etc/cni/net.d
-
+# tree /etc/cni/net.d
 /etc/cni/net.d
 └── 10-flannel.conflist
 ```
@@ -185,12 +178,11 @@ lima-rancher-desktop:/# tree /etc/cni/net.d
 - A service works like a grouping of pods.
 - You can ```expose``` a service for a deployment from cli:
 ```bash
-kubectl expose deployment frontend --port 8080
+# kubectl expose deployment mealie --port 9000
 ```
 - You can output the service as yaml:
 ```bash
-k get service/mealie -o yaml | tee service.yaml
-
+# kubectl get service/mealie -o yaml | tee service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -208,7 +200,7 @@ spec:
   type: LoadBalancer
 
 
-kubectl apply -f service.yaml 
+# kubectl apply -f service.yaml 
 service/mealie created
 ```
 #### Service Types
@@ -265,23 +257,18 @@ spec:
 
 - Now we see the volume mounted as ```/scratch``` on the pod.
 ```bash
-kubectl describe pod nginx-storage 
-```
-```text
+# kubectl describe pod nginx-storage 
   Volumes:
     scratch-volume:
       Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
       Medium:     
-      SizeLimit:  500Mi  
-
+      SizeLimit:  500Mi
 ```
 
 - We can see the directory mounted at ```/scratch``` when we connect to the pod:
 ```bash
-kubectl exec -it nginx-storage -- /bin/bash
-
-root@nginx-storage:/# df -h
-
+# kubectl exec -it nginx-storage -- /bin/bash
+# df -h
 Filesystem                      Size  Used Avail Use% Mounted on
 overlay                          98G  2.9G   91G   4% /
 tmpfs                            64M     0   64M   0% /dev
@@ -358,8 +345,7 @@ apiVersion: apps/v1
 - Storage classes are objects; there are many types
 - On my local machine, I only have ```local-path```
 ```bash
-kubectl get storageclasses.storage.k8s.io
-
+# kubectl get storageclasses.storage.k8s.io
 NAME                   PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
 local-path (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  47h
 ```
@@ -388,3 +374,144 @@ The volume can be mounted as read-write by a single Pod. Use ReadWriteOncePod ac
 - kubectl is still the defacto management interface.
 
 ![K9s Screenshot](images/k9sScreenshot.png "K9s Screenshot")
+
+## Helm
+![Helm](images/Helm.png "Helm Logo")
+- Helm is the package manager for Kubernetes.
+- It has to be installed to your local system.
+- Helm does not run on your Kubernetes cluster.
+- Helm is a binary that runs on your computer that you add repositories to.
+- When you run the helm command it connects to the active Kubernetes cluster in the context.
+- Helm performs actions on the Kubernetes cluster for you.
+- Helm is running ```kubectl apply``` under the hood.
+```bash
+# brew install helm
+# helm --help
+The Kubernetes package manager
+
+Common actions for Helm:
+
+- helm search:    search for charts
+- helm pull:      download a chart to your local directory to view
+- helm install:   upload the chart to Kubernetes
+- helm list:      list releases of charts
+```
+
+- Helm is a complete package for kubernetes that includes services, pods, and all the dependencies.
+- Helm uses a ```values file (values.yaml)``` to pass configuration variables to your deployment.
+```bash
+# helm ls -A
+NAME       	NAMESPACE  	REVISION	UPDATED                                	STATUS  	CHART                      	APP VERSION
+traefik    	kube-system	1       	2025-08-15 23:33:47.469845406 +0000 UTC	deployed	traefik-34.2.1+up34.2.0    	v3.3.2     
+traefik-crd	kube-system	1       	2025-08-15 23:33:32.327414459 +0000 UTC	deployed	traefik-crd-34.2.1+up34.2.0	v3.3.2
+```
+
+#### Referencing values for Helm
+- You reference your deployment values by passing in ```--values=values.yaml``` to your install command.
+
+```bash
+# helm install <name> <repo> --namespace <name> --create-namespace --values=values.yaml
+
+# Example:
+# helm install homarr oben01/homarr --namespace homarr --create-namespace --values=values.yaml
+```
+#### Modifying or updating values for your Helm deployments
+```bash
+# helm upgrade -n homarr homarr oben01/homarr --values=values.yaml 
+```
+
+## Monitoring
+- https://github.com/prometheus-community/helm-charts/
+- Prometheus and Grafana is the defacto monitoring stack for Kubernetes.
+```bash
+# helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+"prometheus-community" has been added to your repositories
+
+# helm repo update
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "prometheus-community" chart repository
+Update Complete. ⎈Happy Helming!⎈
+```
+- You can see all the available helm charts by running:
+
+```bash
+# helm search repo prometheus-community
+NAME                                              	CHART VERSION	APP VERSION	DESCRIPTION                                       
+prometheus-community/alertmanager                 	1.24.0       	v0.28.1    	The Alertmanager handles alerts sent by client ...
+prometheus-community/alertmanager-snmp-notifier   	2.1.0        	v2.1.0     	The SNMP Notifier handles alerts coming from Pr...
+prometheus-community/jiralert                     	1.8.1        	v1.3.0     	A Helm chart for Kubernetes to install jiralert   
+prometheus-community/kube-prometheus-stack        	76.4.0       	v0.84.1    	kube-prometheus-stack collects Kubernetes manif...
+```
+
+- Install the Prometheus stack.
+```bash
+# helm install prometheus-stack prometheus-community/kube-prometheus-stack --namespace=monitoring --create-namespace
+NAME: prometheus-stack
+LAST DEPLOYED: Sun Aug 17 23:01:07 2025
+NAMESPACE: monitoring
+STATUS: deployed
+REVISION: 1
+Visit https://github.com/prometheus-operator/kube-prometheus
+```
+
+- List helm deployments
+```bash
+# helm ls -A
+NAME            	NAMESPACE  	REVISION	UPDATED                                	STATUS  	CHART                       	APP VERSION
+prometheus-stack	monitoring 	1       	2025-08-17 23:01:07.622674238 -0500 CDT	deployed	kube-prometheus-stack-76.4.0	v0.84.1    
+traefik         	kube-system	1       	2025-08-15 23:33:47.469845406 +0000 UTC	deployed	traefik-34.2.1+up34.2.0     	v3.3.2     
+traefik-crd     	kube-system	1       	2025-08-15 23:33:32.327414459 +0000 UTC	deployed	traefik-crd-34.2.1+up34.2.0 	v3.3.2
+```
+
+- We deployed it into the ```monitoring``` namespace.
+```bash
+# kubectl get pods -n monitoring
+NAME                                                     READY   STATUS    RESTARTS   AGE
+alertmanager-prometheus-stack-kube-prom-alertmanager-0   2/2     Running   0          5m28s
+prometheus-prometheus-stack-kube-prom-prometheus-0       2/2     Running   0          5m28s
+prometheus-stack-grafana-787767957d-l5sv6                3/3     Running   0          5m32s
+prometheus-stack-kube-prom-operator-8876fbc55-6xzbz      1/1     Running   0          5m32s
+prometheus-stack-kube-state-metrics-58cbb5ccb-cpffn      1/1     Running   0          5m32s
+prometheus-stack-prometheus-node-exporter-xd8vm          1/1     Running   0          5m32s
+```
+- Quick note on ```prometheus-stack-kube-prom-operator```
+- Kubernetes by default can manage stateless applications. ```Operators``` extend Kubernetes to handle stateful applications.
+- Along with the pods, the Helm chart deploys services for Prometheus.
+
+```bash
+# kubectl get svc -n monitoring
+NAME                                        TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+alertmanager-operated                       ClusterIP   None            <none>        9093/TCP,9094/TCP,9094/UDP   12m
+prometheus-operated                         ClusterIP   None            <none>        9090/TCP                     12m
+prometheus-stack-grafana                    ClusterIP   10.43.240.215   <none>        80/TCP                       12m
+prometheus-stack-kube-prom-alertmanager     ClusterIP   10.43.123.53    <none>        9093/TCP,8080/TCP            12m
+prometheus-stack-kube-prom-operator         ClusterIP   10.43.202.145   <none>        443/TCP                      12m
+prometheus-stack-kube-prom-prometheus       ClusterIP   10.43.172.175   <none>        9090/TCP,8080/TCP            12m
+prometheus-stack-kube-state-metrics         ClusterIP   10.43.252.212   <none>        8080/TCP                     12m
+prometheus-stack-prometheus-node-exporter   ClusterIP   10.43.82.195    <none>        9100/TCP                     12m
+```
+
+- You will need the default grafana password to log into Grafana, but how do we get it?
+- Reading Helm Values: ```helm show values [CHART] [flags]```
+
+```bash
+# helm show values prometheus-community/kube-prometheus-stack | tee prometheus-default-values.yaml
+
+defaultDashboardsInterval: 1m
+1299 
+1300   adminUser: admin
+1301   adminPassword: prom-operator <== password
+```
+
+![Grafana](images/Grafana.png "Grafana Screenshot")
+
+- Change the Grafana password with ```values.yaml``` but please do not check that file into Git! Its your password and you don't want the world to have it!
+```bash
+grafana:
+  adminPassword: 'some-new-password'
+```
+- Then run:
+```bash
+# helm upgrade prometheus-stack prometheus-community/kube-prometheus-stack -n monitoring --values=values.yaml
+Release "prometheus-stack" has been upgraded. Happy Helming!
+```
