@@ -1,19 +1,28 @@
 # Kube
+- https://kubernetes.io/docs/concepts/architecture/
+
+![Kube Components](images/KubeComponents.png "Kube Components")
+
 ## Containers
+- https://kubernetes.io/docs/concepts/containers/
 - You typically would not use Kube to just run a single container, but you can still do it:
 ```bash
 kubectl run nginx-ross --image=nginx
 ```
 ## Control Plane
+- https://kubernetes.io/docs/concepts/architecture/control-plane-node-communication/
 - **API server**: Kubectl talks to the API server. The API server listens on port ```:6443```
 - **Scheduler**: Placement manager, evaluates constraints and makes sure there are enough resources on the node. API server schedules pods through the ```scheduler```. The scheduler  assigns pods to a node.
 - **ETCD**: The backing config data store for the Kube cluster. Facilitates cluster recovery.
 
 ## Pods
-Pods are the smallest element in Kubernetes. Pods are not containers, they are a collection of containers. You deploy applications into pods. A pod of whale's. The most common pod is a single container however, but they are not synonymous, 
+- https://kubernetes.io/docs/concepts/workloads/pods/
+
+Pods are the smallest element in Kubernetes. Pods are not containers, they are a collection of containers. You deploy applications into pods. A pod of whale's. The most common pod is a single container however, but they are not synonymous.
 - A pod could be two containers, an init container that checks for connectivity before your application container runs.
 - Or an application container, web server container, along with a database container.
 - All of the pod members containers share the same storage.
+- It is not possible to directly add or remove regular containers from a running Kubernetes Pod. Once a Pod is created, its container configuration is immutable. Kubernetes treats a Pod as a single unit, and all containers within a Pod are intended to run together. Modify the higher level ```deployment spec``` to add or remove containers. 
 
 ### Generatting base YAML for pods
 Rather than start from scratch, you can output a dry run to get started:
@@ -37,7 +46,11 @@ spec:
 status: {}
 ```
 
+![Kube Diagram](images/KubeDiagram.png "Kube Diagram")
+
 ## Namespaces
+- https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
+
 In Kubernetes, namespaces provide a mechanism for isolating groups of resources within a single cluster. Names of resources need to be unique within a namespace, but not across namespaces.
 Applications should have their own namespace as a good design pattern.
 Think of this as a logical grouping.
@@ -84,6 +97,8 @@ users:
 ```
 
 ## Deployments
+- https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+
 A Deployment manages a set of Pods to run an application workload, usually one that doesn't maintain state.
 A Deployment provides declarative updates for Pods and ReplicaSets.
 You describe a desired state in a Deployment, and the Deployment Controller changes the actual state to the desired state at a controlled rate.
@@ -128,6 +143,7 @@ mealie   1/1     1            1           17h
 
 ```
 ### Port forwarding cheat for a quick test
+- https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/
 - This method is not for production use as you have to keep the command running in terminal for this test.
 
 ```bash
@@ -140,6 +156,7 @@ Handling connection for 9000
 Handling connection for 9000
 ```
 ## Networking
+- https://kubernetes.io/docs/concepts/services-networking/
 - Networking happens on the pod level. Kube does not connect individual containers together.
 - Each pod gets an IP address.
 - By default, pods can connect to all pods on all nodes.
@@ -147,6 +164,7 @@ Handling connection for 9000
 - Containers in the pod can communicate with each other through ```localhost```, therefore each container needs to be exposed on different port numbers inside the pod.
 
 ### CNI Plugins: Container Networking Interface
+- https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/
 - Provides the network connectivity to containers.
 - Configures the network interfaces in the containers.
 - Assigns IP addresses and sets up routing --> Iptables on nodes.
@@ -159,6 +177,7 @@ lima-rancher-desktop:/# tree /etc/cni/net.d
 ```
 
 ### Services
+- https://kubernetes.io/docs/concepts/services-networking/service/
 - A service offers a consistent address to access a set of pods.
 - Pods are ephemeral. You should not expect a pod to have a long lifespan.
 - Pods are constantly changing and moving across nodes.
@@ -199,6 +218,7 @@ service/mealie created
 (Can also be used for k3s/Rancher Desktop)
 
 ### Ingress
+- https://kubernetes.io/docs/concepts/services-networking/ingress/
 - Ingress exposes HTTP and HTTPS routes from outside the cluster to services within the cluster.
 - SSL / TLS termination
 - External URL's
@@ -214,3 +234,157 @@ service/mealie created
 - Listens for HTTP or HTTPS
 - Ingress controllers contain a route to a service endpoint.
 - The service endpoint routes the request to the pod.
+
+## Storage
+- https://kubernetes.io/docs/concepts/storage/volumes/
+- Volumes are local storage or cloud storage that are portioned for the containers running in a pod.
+- Volumes are configured at the pod level, not the container level.
+
+### Ephemeral Storage
+- https://kubernetes.io/docs/concepts/storage/ephemeral-volumes/
+- Ephemeral storage goes away when the pod goes away.
+- **emptyDir** is a special type of ephemeral volume that lasts the lifetime of the pod.
+```bash
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+  name: nginx-storage
+spec:
+  containers:
+    - image: nginx
+      name: nginx
+      volumeMounts:
+        - mountPath: /scratch
+          name: scratch-volume
+  volumes:
+    - name: scratch-volume
+      emptyDir:
+        sizeLimit: 500Mi
+```
+
+- Now we see the volume mounted as ```/scratch``` on the pod.
+```bash
+kubectl describe pod nginx-storage 
+```
+```text
+  Volumes:
+    scratch-volume:
+      Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
+      Medium:     
+      SizeLimit:  500Mi  
+
+```
+
+- We can see the directory mounted at ```/scratch``` when we connect to the pod:
+```bash
+kubectl exec -it nginx-storage -- /bin/bash
+
+root@nginx-storage:/# df -h
+
+Filesystem                      Size  Used Avail Use% Mounted on
+overlay                          98G  2.9G   91G   4% /
+tmpfs                            64M     0   64M   0% /dev
+/dev/disk/by-label/data-volume   98G  2.9G   91G   4% /scratch
+shm                              64M     0   64M   0% /dev/shm
+tmpfs                            32G   12K   32G   1% /run/secrets/kubernetes.io/serviceaccount
+tmpfs                            16G     0   16G   0% /proc/acpi
+tmpfs                            16G     0   16G   0% /proc/scsi
+tmpfs                            16G     0   16G   0% /sys/firmware
+```
+
+### Persistent Storage
+- https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+- Persistent volumes: These work like large disks attached to a VM.
+- Persistent volume claims: Each application ```claims``` a piece of the larger disk for their own isolated application.
+- There are two ways PVs may be provisioned: statically or dynamically.
+
+### Persistent Volume Claims
+- PVC's are independent of the deployment. They persist after the deployment is gone
+```bash
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mealie-data
+  namespace: mealie
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 500Mi
+```
+
+### Mounting Persistent Volume Claim From Deployment
+- https://kubernetes.io/docs/tasks/configure-pod-container/configure-persistent-volume-storage/
+- We can mount the PV at ```/app/data``` on the container.
+
+```bash
+apiVersion: apps/v1
+  2 kind: Deployment
+  3 metadata:
+  4   labels:
+  5     app: mealie
+  6   name: mealie
+  7   namespace: mealie
+  8 spec:
+  9   replicas: 1
+ 10   selector:
+ 11     matchLabels:
+ 12       app: mealie
+ 13   template:
+ 14     metadata:
+ 15       labels:
+ 16         app: mealie
+ 17     spec:
+ 18       containers:
+ 19         - image: ghcr.io/mealie-recipes/mealie:v3.0.2
+ 20           name: mealie
+ 21           volumeMounts:
+ 22             - mountPath: /app/data
+ 23               name: mealie-data
+ 24           ports:
+ 25             - containerPort: 9000
+ 26       volumes:
+ 27         - name: mealie-data
+ 28           persistentVolumeClaim:
+ 29             claimName: mealie-data
+```
+
+### Storage Classes
+- https://kubernetes.io/docs/concepts/storage/storage-classes/
+- https://kubernetes.io/docs/concepts/storage/storage-classes/#provisioner
+- Storage classes are objects; there are many types
+- On my local machine, I only have ```local-path```
+```bash
+kubectl get storageclasses.storage.k8s.io
+
+NAME                   PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+local-path (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  47h
+```
+
+### Access Modes
+- https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes
+
+A PersistentVolume can be mounted on a host in any way supported by the resource provider.
+Providers will have different capabilities and each PV's access modes are set to the specific modes supported by that particular volume. For example, NFS can support multiple read/write clients, but a specific NFS PV might be exported on the server as read-only. Each PV gets its own set of access modes describing that specific PV's capabilities.
+
+- ReadWriteOnce
+The volume can be mounted as read-write by a single node. ReadWriteOnce access mode still can allow multiple pods to access (read from or write to) that volume when the pods are running on the same node. For single pod access, please see ReadWriteOncePod.
+
+- ReadOnlyMany
+The volume can be mounted as read-only by many nodes.
+
+- ReadWriteMany
+The volume can be mounted as read-write by many nodes.
+
+- ReadWriteOncePod: FEATURE STATE: Kubernetes v1.29 [stable]
+The volume can be mounted as read-write by a single Pod. Use ReadWriteOncePod access mode if you want to ensure that only one pod across the whole cluster can read that PVC or write to it.
+
+## K9s
+- K9s is also used to help manage clusters.
+- Useful for browsing clusters in a TUI.
+- kubectl is still the defacto management interface.
+
+![K9s Screenshot](images/k9sScreenshot.png "K9s Screenshot")
