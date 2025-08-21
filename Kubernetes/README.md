@@ -515,3 +515,34 @@ grafana:
 # helm upgrade prometheus-stack prometheus-community/kube-prometheus-stack -n monitoring --values=values.yaml
 Release "prometheus-stack" has been upgraded. Happy Helming!
 ```
+
+## Managed Kubernetes on EKS
+- EKS is the managed Kube cluster service provided by AWS.
+- Maintains the master nodes
+- Installs the required apps, kube proxy, CNI, etc.
+- Scales master nodes for you.
+- They take care of backups for you.
+- You just create and maintain worker nodes.
+
+- How to set up the control plane:
+```bash
+# Set up your AWS CLI
+aws eks update-kubeconfig --region <your-aws-region> --name <your-cluster-name>
+```
+
+- Create workers as a **NODE GROUP**
+- When you create a node group you choose the cluster it will connect to, the instance type, and the security group.
+- With node group you also have auto-scaling.
+- Define Max and Min nodes to scale to.
+- There are tools like ```eksctl``` so that you can easily manage EKS clusters without ```kubectl```
+
+- Creating a cluster (takes a while to create)
+```bash
+eksctl create cluster --name test-cluster --version 1.17 --region us-east-2 \
+ --nodegroup linux-nodes --node-type t2.micro --nodes 2
+```
+
+- Deleting a cluster (takes a while to delete)
+```bash
+eksctl delete cluster --name test-cluster
+```
