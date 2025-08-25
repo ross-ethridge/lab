@@ -1,3 +1,5 @@
 **/*.idea/*
 **/.ipynb_*
 **/.terraform*
+**/tfplan
+**/*terraform.tfstate*
