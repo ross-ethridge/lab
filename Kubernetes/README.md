@@ -9,6 +9,7 @@
 ```bash
 # kubectl run nginx-ross --image=nginx
 ```
+
 ## Control Plane
 - https://kubernetes.io/docs/concepts/architecture/control-plane-node-communication/
 - **API server**: Kubectl talks to the API server. The API server listens on port ```:6443```
@@ -137,6 +138,9 @@ NAME     READY   UP-TO-DATE   AVAILABLE   AGE
 mealie   1/1     1            1           17h
 
 ```
+
+- The container spec of a deployment is where we can configure CPU and Memory ```requests (min)``` and ```limits (max)``` for each container in the pod if desired.
+
 ### Port forwarding cheat for a quick test
 - https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/
 - This method is not for production use as you have to keep the command running in terminal for this test.
