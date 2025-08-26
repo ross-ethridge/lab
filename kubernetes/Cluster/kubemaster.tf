@@ -31,7 +31,7 @@ resource "lxd_instance" "kubemaster" {
     "user.user-data" = <<-EOF
       #cloud-config
       packages:
-        - build-essemtial
+        - build-essential
         - openssh-server
 
       users:

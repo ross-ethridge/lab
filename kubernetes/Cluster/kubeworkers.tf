@@ -33,7 +33,7 @@ resource "lxd_instance" "kubeworker" {
     "user.user-data" = <<-EOF
       #cloud-config
       packages:
-        - build-essemtial
+        - build-essential
         - openssh-server
 
       users:
