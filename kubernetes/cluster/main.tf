@@ -206,17 +206,3 @@ output "kubeworker_ips" {
     instance.name => instance.ipv4_address
   }
 }
-
-
-# output "kubemaster_ip_address" {
-#   value = lxd_instance.kubemaster.ipv4_address
-# }
-# output "kubeworker0_ip_address" {
-#   value = lxd_instance.kubeworker[0].ipv4_address
-# }
-# output "kubeworker1_ip_address" {
-#   value = lxd_instance.kubeworker[1].ipv4_address
-# }
-# output "kubeworker2_ip_address" {
-#   value = lxd_instance.kubeworker[2].ipv4_address
-# }
