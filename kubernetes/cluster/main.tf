@@ -165,6 +165,7 @@ resource "lxd_instance" "kubeworker" {
         - curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.34/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
         - bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)" --prefix=/usr/local
         - cp /usr/local/share/oh-my-bash/bashrc ~rossethridge/.bashrc
+        - cp /usr/local/share/oh-my-bash/bashrc ~/.bashrc
         - echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list
         - echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.34/deb/ /' | tee /etc/apt/sources.list.d/kubernetes.list
         - wget https://github.com/etcd-io/etcd/releases/download/v3.6.4/etcd-v3.6.4-linux-amd64.tar.gz
@@ -196,13 +197,15 @@ resource "lxd_instance" "kubeworker" {
 
 // Output Ip Addresses
 
-output "kubemaster_ip" {
-  value = lxd_instance.kubemaster.ipv4_address
+output "ControlPlane" {
+  value = {
+    "${lxd_instance.kubemaster.name}.lxd" = "${lxd_instance.kubemaster.ipv4_address}"
+  }
 }
 
-output "kubeworker_ips" {
+output "Workers" {
   value = {
     for instance in lxd_instance.kubeworker :
-    instance.name => instance.ipv4_address
+    "${instance.name}.lxd" => instance.ipv4_address
   }
 }
