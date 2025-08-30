@@ -169,7 +169,7 @@ resource "lxd_instance" "kubeworker" {
         - echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.34/deb/ /' | tee /etc/apt/sources.list.d/kubernetes.list
         - wget https://github.com/etcd-io/etcd/releases/download/v3.6.4/etcd-v3.6.4-linux-amd64.tar.gz
         - tar -xvzf etcd-v3.6.4-linux-amd64.tar.gz
-        - cp etcd-v3.6.4-linux-amd64/{etcd,etcdctl} /usr/local/bin/
+        - cp etcd-v3.6.4-linux-amd64/etcdctl /usr/local/bin/
         - apt update
         - apt install -y kubelet kubeadm kubectl containerd.io
         - containerd config default | sudo tee /etc/containerd/config.toml > /dev/null
