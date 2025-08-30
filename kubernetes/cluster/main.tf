@@ -29,7 +29,7 @@ resource "lxd_storage_pool" "kubemaster_pool" {
   driver = "zfs"
 }
 
-// LXD VM Instance
+// KubeMaster VM Instance
 resource "lxd_instance" "kubemaster" {
   depends_on = [lxd_storage_pool.kubemaster_pool]
   type       = "virtual-machine"
@@ -108,14 +108,14 @@ resource "lxd_instance" "kubemaster" {
 }
 
 
-// Storage pool for kubeworker instance
+// Storage pool for kubeworker instance(s)
 resource "lxd_storage_pool" "kubeworker_pool" {
   count  = 3
   name   = "kubeworker${count.index}-pool"
   driver = "zfs"
 }
 
-// LXD VM Instance
+// KubeWorker VM Instance(s)
 resource "lxd_instance" "kubeworker" {
   depends_on = [lxd_storage_pool.kubeworker_pool]
   count      = 3
@@ -194,17 +194,29 @@ resource "lxd_instance" "kubeworker" {
 
 }
 
+// Output Ip Addresses
 
-
-output "kubemaster_ip_address" {
+output "kubemaster_ip" {
   value = lxd_instance.kubemaster.ipv4_address
 }
-output "kubeworker0_ip_address" {
-  value = lxd_instance.kubeworker[0].ipv4_address
+
+output "kubeworker_ips" {
+  value = {
+    for instance in lxd_instance.kubeworker :
+    instance.name => instance.ipv4_address
+  }
 }
-output "kubeworker1_ip_address" {
-  value = lxd_instance.kubeworker[1].ipv4_address
-}
-output "kubeworker2_ip_address" {
-  value = lxd_instance.kubeworker[2].ipv4_address
-}
+
+
+# output "kubemaster_ip_address" {
+#   value = lxd_instance.kubemaster.ipv4_address
+# }
+# output "kubeworker0_ip_address" {
+#   value = lxd_instance.kubeworker[0].ipv4_address
+# }
+# output "kubeworker1_ip_address" {
+#   value = lxd_instance.kubeworker[1].ipv4_address
+# }
+# output "kubeworker2_ip_address" {
+#   value = lxd_instance.kubeworker[2].ipv4_address
+# }
