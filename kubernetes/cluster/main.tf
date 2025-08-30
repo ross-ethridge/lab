@@ -1,4 +1,5 @@
 terraform {
+  backend "local" { }
   required_providers {
     lxd = {
       source  = "terraform-lxd/lxd"
