@@ -74,29 +74,33 @@ resource "lxd_instance" "kubemaster" {
 
       runcmd:
         - mkdir -p /etc/apt/keyrings
-        - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+        - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
         - curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.34/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
         - bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)" --prefix=/usr/local
         - cp /usr/local/share/oh-my-bash/bashrc ~rossethridge/.bashrc
+        - cp /usr/local/share/oh-my-bash/bashrc ~/.bashrc
         - echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list
         - echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.34/deb/ /' | tee /etc/apt/sources.list.d/kubernetes.list
         - wget https://github.com/etcd-io/etcd/releases/download/v3.6.4/etcd-v3.6.4-linux-amd64.tar.gz
         - tar -xvzf etcd-v3.6.4-linux-amd64.tar.gz
-        - cp etcd-v3.6.4-linux-amd64/{etcd,etcdctl} /usr/local/bin/
+        - cp etcd-v3.6.4-linux-amd64/etcdctl /usr/local/bin/
         - apt update
         - apt install -y kubelet kubeadm kubectl containerd.io
-        - containerd config default | sudo tee /etc/containerd/config.toml > /dev/null
+        - containerd config default | sudo tee /etc/containerd/config.toml
         - sed -i 's/disabled_plugins = \["cri"\]/#disabled_plugins = \["cri"\]/' /etc/containerd/config.toml
         - sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
         - apt-mark hold kubelet kubeadm kubectl containerd.io
         - sysctl -w net.ipv4.ip_forward=1
+        - sysctl -w net.bridge.bridge-nf-call-iptables=1
         - echo "net.ipv4.ip_forward = 1" | tee -a /etc/sysctl.conf
-        - sysctl -p
+        - echo "net.bridge.bridge-nf-call-iptables = 1" | tee -a /etc/sysctl.conf
+        - modprobe bridge
+        - modprobe br_netfilter
+        - sysctl -p /etc/sysctl.conf
         - systemctl enable containerd
         - systemctl enable kubelet
         - systemctl restart containerd.service
         - systemctl restart kubelet.service
-
       EOF
   }
 
@@ -161,7 +165,7 @@ resource "lxd_instance" "kubeworker" {
 
       runcmd:
         - mkdir -p /etc/apt/keyrings
-        - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+        - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
         - curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.34/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
         - bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)" --prefix=/usr/local
         - cp /usr/local/share/oh-my-bash/bashrc ~rossethridge/.bashrc
@@ -173,18 +177,21 @@ resource "lxd_instance" "kubeworker" {
         - cp etcd-v3.6.4-linux-amd64/etcdctl /usr/local/bin/
         - apt update
         - apt install -y kubelet kubeadm kubectl containerd.io
-        - containerd config default | sudo tee /etc/containerd/config.toml > /dev/null
+        - containerd config default | sudo tee /etc/containerd/config.toml
         - sed -i 's/disabled_plugins = \["cri"\]/#disabled_plugins = \["cri"\]/' /etc/containerd/config.toml
         - sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
         - apt-mark hold kubelet kubeadm kubectl containerd.io
         - sysctl -w net.ipv4.ip_forward=1
+        - sysctl -w net.bridge.bridge-nf-call-iptables=1
         - echo "net.ipv4.ip_forward = 1" | tee -a /etc/sysctl.conf
-        - sysctl -p
+        - echo "net.bridge.bridge-nf-call-iptables = 1" | tee -a /etc/sysctl.conf
+        - modprobe bridge
+        - modprobe br_netfilter
+        - sysctl -p /etc/sysctl.conf
         - systemctl enable containerd
         - systemctl enable kubelet
         - systemctl restart containerd.service
         - systemctl restart kubelet.service
-
       EOF
   }
 
