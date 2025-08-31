@@ -20,14 +20,14 @@
 
 - To initialize the cluster we need to run this command from the kubemaster:
 ```bash
-# sudo kubeadm init --control-plane-endpoint=$(hostname -f) --node-name=$(hostname -f) --pod-network-cidr=10.244.0.0/16
+# kubeadm init --control-plane-endpoint=$(hostname -f) --node-name=$(hostname -f) --pod-network-cidr=10.244.0.0/16
 ```
 
 ## Join Nodes to the Cluster
 - Now we join our worker nodes to the cluster
 - To get the join command, run this from the KubeMaster:
 ```bash
-# sudo kubeadm token create --print-join-command
+# kubeadm token create --print-join-command
 
 kubeadm join 240.2.0.146:6443 --token nimjjy.h7xxxxxxxxx --discovery-token-ca-cert-hash sha256:9f9996006a105b50523385ca2c8a8blahblah77777
 ```
@@ -66,6 +66,26 @@ daemonset.apps/kube-flannel-ds created
 daemonset.apps/kube-flannel-ds restarted
 ```
 
+- You should see flannel running on each node.
+```bash
+# kubectl get pods --all-namespaces
+
+NAMESPACE      NAME                                     READY   STATUS    RESTARTS   AGE
+kube-flannel   kube-flannel-ds-gnhzs                    1/1     Running   0          57s
+kube-flannel   kube-flannel-ds-kgcdd                    1/1     Running   0          43s
+kube-flannel   kube-flannel-ds-m28xg                    1/1     Running   0          79s
+kube-flannel   kube-flannel-ds-mspw4                    1/1     Running   0          4m36s
+kube-system    coredns-66bc5c9577-9wrsb                 1/1     Running   0          6m30s
+kube-system    coredns-66bc5c9577-wjndc                 1/1     Running   0          6m30s
+kube-system    etcd-kubemaster.lxd                      1/1     Running   0          6m39s
+kube-system    kube-apiserver-kubemaster.lxd            1/1     Running   0          6m39s
+kube-system    kube-controller-manager-kubemaster.lxd   1/1     Running   0          6m39s
+kube-system    kube-proxy-64zzb                         1/1     Running   0          57s
+kube-system    kube-proxy-dwrzm                         1/1     Running   0          43s
+kube-system    kube-proxy-f7mvm                         1/1     Running   0          6m31s
+kube-system    kube-proxy-f8x4f                         1/1     Running   0          79s
+kube-system    kube-scheduler-kubemaster.lxd            1/1     Running   0          6m39s
+```
 
 ## Deploy a Pod and Test
 - Lets deploy a pod and see if it works?

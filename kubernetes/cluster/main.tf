@@ -90,12 +90,10 @@ resource "lxd_instance" "kubemaster" {
         - sed -i 's/disabled_plugins = \["cri"\]/#disabled_plugins = \["cri"\]/' /etc/containerd/config.toml
         - sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
         - apt-mark hold kubelet kubeadm kubectl containerd.io
-        - sysctl -w net.ipv4.ip_forward=1
-        - sysctl -w net.bridge.bridge-nf-call-iptables=1
+        - modprobe br_netfilter
+        - modprobe bridge
         - echo "net.ipv4.ip_forward = 1" | tee -a /etc/sysctl.conf
         - echo "net.bridge.bridge-nf-call-iptables = 1" | tee -a /etc/sysctl.conf
-        - modprobe bridge
-        - modprobe br_netfilter
         - sysctl -p /etc/sysctl.conf
         - systemctl enable containerd
         - systemctl enable kubelet
@@ -181,12 +179,10 @@ resource "lxd_instance" "kubeworker" {
         - sed -i 's/disabled_plugins = \["cri"\]/#disabled_plugins = \["cri"\]/' /etc/containerd/config.toml
         - sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
         - apt-mark hold kubelet kubeadm kubectl containerd.io
-        - sysctl -w net.ipv4.ip_forward=1
-        - sysctl -w net.bridge.bridge-nf-call-iptables=1
+        - modprobe br_netfilter
+        - modprobe bridge
         - echo "net.ipv4.ip_forward = 1" | tee -a /etc/sysctl.conf
         - echo "net.bridge.bridge-nf-call-iptables = 1" | tee -a /etc/sysctl.conf
-        - modprobe bridge
-        - modprobe br_netfilter
         - sysctl -p /etc/sysctl.conf
         - systemctl enable containerd
         - systemctl enable kubelet
