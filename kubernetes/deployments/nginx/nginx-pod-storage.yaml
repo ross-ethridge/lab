@@ -1,21 +1,22 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  labels:
   name: nginx-storage
+  labels:
+    app.kubernetes.io/name: proxy
 spec:
   containers:
-    - image: nginx
-      name: nginx
+    - name: nginx
+      image: nginx:stable
       ports:
         - containerPort: 80
-          name: http-port
+          name: http-web-svc
           protocol: TCP 
       volumeMounts:
         - mountPath: /scratch
           name: scratch-volume
-    - image: busybox
-      name: busybox
+    - name: busybox
+      image: busybox:latest
       command: ["/bin/sh", "-c"]
       args: ["sleep 1000"]
       volumeMounts:

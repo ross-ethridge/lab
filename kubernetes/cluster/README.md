@@ -38,7 +38,6 @@ kubeadm join 240.2.0.146:6443 --token nimjjy.h7xxxxxxxxx --discovery-token-ca-ce
 ```bash
 # kubectl get nodes -o wide
 
-kubectl get nodes -o wide
 NAME          STATUS   ROLES           AGE    VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION     CONTAINER-RUNTIME
 kubemaster    Ready    control-plane   150m   v1.34.0   240.2.0.146   <none>        Ubuntu 24.04.3 LTS   6.8.0-71-generic   containerd://1.7.27
 kubeworker0   Ready    <none>          18m    v1.34.0   240.2.0.77    <none>        Ubuntu 24.04.3 LTS   6.8.0-71-generic   containerd://1.7.27
@@ -47,7 +46,6 @@ kubeworker2   Ready    <none>          16m    v1.34.0   240.2.0.140   <none>    
 ```
 
 ## Install a CNI [like flannel]
-- note: Run as root [mileage may vary]
 ```bash
 # kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
 
@@ -92,21 +90,25 @@ kube-system    kube-scheduler-kubemaster.lxd            1/1     Running   0     
 ```bash
 # nginx-pod-storage.yaml
 # Nginx pod with a storoage volume
--
 apiVersion: v1
 kind: Pod
 metadata:
-  labels:
   name: nginx-storage
+  labels:
+    app.kubernetes.io/name: proxy
 spec:
   containers:
-    - image: nginx
-      name: nginx
+    - name: nginx
+      image: nginx:stable
+      ports:
+        - containerPort: 80
+          name: http-web-svc
+          protocol: TCP 
       volumeMounts:
         - mountPath: /scratch
           name: scratch-volume
-    - image: busybox
-      name: busybox
+    - name: busybox
+      image: busybox:latest
       command: ["/bin/sh", "-c"]
       args: ["sleep 1000"]
       volumeMounts:
@@ -116,6 +118,7 @@ spec:
     - name: scratch-volume
       emptyDir:
         sizeLimit: 500Mi
+
 ```
 
 - Lets send it.
@@ -124,5 +127,75 @@ spec:
 
 pod/nginx-storage created
 
+```
+- Check to see if it worked?
+```bash
+# kubectl get pods -o wide
 
+NAME            READY   STATUS    RESTARTS       AGE   IP           NODE          NOMINATED NODE   READINESS GATES
+nginx-storage   2/2     Running   3 (5m9s ago)   55m   10.244.4.3   kubeworker2   <none>           <none>
+
+```
+
+- Lets expose the container port using a service
+```bash
+# nginx-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app.kubernetes.io/name: proxy
+  type: NodePort
+  ports:
+    - name: nginx-service
+      port: 80
+      protocol: TCP
+      targetPort: http-web-svc
+      nodePort: 30080
+
+```
+
+- Apply the service
+```bash
+# kubectl apply -f nginx-service.yaml 
+
+service/nginx-service configured
+
+
+# kubectl get service nginx-service
+
+NAME            TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+nginx-service   NodePort   10.108.71.13   <none>        80:30080/TCP   27m
+
+```
+
+- Now we should be able to reach the Niginx pod from any cluster node on port ```:30080```
+```bash
+# curl http://kubeworker0.lxd:30080
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
 ```
