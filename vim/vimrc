@@ -1,31 +1,28 @@
-" Ensure VIM uses filetype plugins
-filetype plugin on
+" Enable filetype detection and plugins for automatic indentation
+filetype indent plugin on
 
-" Enable indentation
-filetype indent on
+" Specific settings for YAML files
+setlocal ts=2 sts=2 sw=2 expandtab
+setlocal autoindent
+setlocal smartindent
 
-" Set the default indentation to 2 spaces for all files
-set tabstop=2
-set softtabstop=2
-set shiftwidth=2
-set expandtab
+" Optional: Enable line numbers and cursor highlighting for better navigation
+setlocal number
+setlocal cursorline
+setlocal cursorcolumn
 
-" Highlight trailing whitespace in all files
-" autocmd BufRead,BufNewFile * match Error /\s\+s/
-set list
-set listchars=trail:~,tab:»·,nbsp:%
+" Optional: Indent guides (requires a plugin like indentLine)
+let g:indentLine_char = '⦙'
 
-" Enable auto-indentation
-set autoindent
+" Optional: Folding based on indentation (can use built-in or a plugin like vim-yaml-folds)
+" autocmd FileType yaml setlocal foldmethod=indent
 
-" Turn on syntax highlighting
-syntax on
+" Highlight extra white space
+highlight ExtraWhitespace ctermbg=red guibg=red
+match ExtraWhitespace /\s\+$/
 
-" Set backspace so it acts more intuitively
-set backspace=indent,eol,start
-
-" Turn on line numbering
+" Turn on line numbers
 set number
 
-" Make paste work correctly
+" Make paste behave correctly
 set paste
