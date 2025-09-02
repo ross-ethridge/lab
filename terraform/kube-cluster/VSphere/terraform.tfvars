@@ -1,0 +1,10 @@
+// vsphere_password = should be passed in from env
+// vsphere_user = should be passed in from env
+vsphere_datacenter = "Lab"
+vsphere_datastore  = "datastore2"
+vsphere_server  = "vcenter.washco-web.com"
+vsphere_network = "VM Network"
+vsphere_virtual_machine_domain   = "washco-web.com"
+vsphere_virtual_machine_folder   = "VirtualMachines"
+vsphere_virtual_machine_template = "pkrbuild-0731211628"
+

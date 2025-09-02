@@ -1,11 +1,11 @@
 terraform {
-#  backend "local" {}
-  backend "azurerm" {
-    resource_group_name  = var.resource_group_name
-    storage_account_name = var.storage_account_name
-    container_name       = var.container_name
-    key                  = "kube_cluster.terraform.tfstate"
-  }
+  backend "local" {}
+  # backend "azurerm" {
+  #   resource_group_name = "washco-lab"
+  #   storage_account_name = "washco-lab"
+  #   container_name = "washco-lab"
+  #   key = "kube_cluster.terraform.tfstate"
+  # }
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -29,24 +29,23 @@ data "vsphere_datacenter" "lab" {
   name = var.vsphere_datacenter
 }
 
-data "vsphere_datastore" "datastore_1" {
-  name          = var.vsphere_datastore_1
-  datacenter_id = data.vsphere_datacenter.dc.id
+data "vsphere_datastore" "datastore" {
+  name          = var.vsphere_datastore
+  datacenter_id = data.vsphere_datacenter.lab.id
 }
 
-data "vsphere_network" "kubernetes" {
-  name                            = var.vsphere_network_mgmt
-  datacenter_id                   = data.vsphere_datacenter.dc.id
-  distributed_virtual_switch_uuid = data.vsphere_distributed_virtual_switch.tools_vswitch.id
+data "vsphere_network" "vm_network" {
+  name          = var.vsphere_network
+  datacenter_id = data.vsphere_datacenter.lab.id
 }
 
 data "vsphere_virtual_machine" "vm_template" {
   name          = var.vsphere_virtual_machine_template
-  datacenter_id = data.vsphere_datacenter.dc.id
+  datacenter_id = data.vsphere_datacenter.lab.id
 }
 
 data "local_file" "build_key_pub" {
-  filename = "~/.ssh/tf_id_rsa.pub"
+  filename = "./templates/tf_id_rsa.pub"
 }
 
 data "template_file" "userdata" {
@@ -65,23 +64,24 @@ data "template_file" "metadata" {
 resource "vsphere_virtual_machine" "kubemaster" {
   count            = 1
   name             = format("kubemaster-%02d", count.index) + ".${var.vsphere_virtual_machine_domain}"
-  datastore_id     = data.vsphere_datastore.datastore_1.id
+  datastore_id     = data.vsphere_datastore.datastore.id
   folder           = var.vsphere_virtual_machine_folder
-  num_cpus = data.vsphere_virtual_machine.template.num_cpus
-  memory   = data.vsphere_virtual_machine.template.memory
-  guest_id = data.vsphere_virtual_machine.template.guest_id
+  num_cpus         = data.vsphere_virtual_machine.vm_template.num_cpus
+  memory           = data.vsphere_virtual_machine.vm_template.memory
+  guest_id         = data.vsphere_virtual_machine.vm_template.guest_id
+  resource_pool_id = data.vsphere_datastore.datastore.id
 
-  scsi_type = data.vsphere_virtual_machine.template.scsi_type
+  scsi_type = data.vsphere_virtual_machine.vm_template.scsi_type
 
   network_interface {
-    network_id   = data.vsphere_network.vault.id
-    adapter_type = data.vsphere_virtual_machine.template.network_interface_types[0]
+    network_id   = data.vsphere_network.vm_network.id
+    adapter_type = data.vsphere_virtual_machine.vm_template.network_interface_types[0]
   }
 
   disk {
-    thin_provisioned = data.vsphere_virtual_machine.template.disks.0.thin_provisioned
+    thin_provisioned = data.vsphere_virtual_machine.vm_template.disks.0.thin_provisioned
     label            = "disk0"
-    size             = data.vsphere_virtual_machine.template.disks.0.size
+    size             = data.vsphere_virtual_machine.vm_template.disks.0.size
   }
 
   clone {
