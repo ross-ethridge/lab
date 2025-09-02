@@ -1,0 +1,44 @@
+#cloud-config
+autoinstall:
+  version: 1
+  apt:
+    fallback: offline-install
+    geoip: true
+    preserve_sources_list: false
+    primary:
+    - arches: [amd64, i386]
+      uri: http://us.archive.ubuntu.com/ubuntu
+    - arches: [default]
+      uri: http://ports.ubuntu.com/ubuntu-ports
+  users:
+  - default
+  - name: packer
+    lock_passwd: false
+    passwd: "${packer_password}"
+
+  identity:
+    hostname: "${host_name}"
+    username: packer
+    password: "${packer_password}"
+    install-server: true
+  user-data:
+    disable_root: false
+  locale: en_US
+  storage:
+    layout:
+      name: direct
+    config:
+      - type: disk
+        id: disk0
+        match:
+          size: largest
+      - type: partition
+        id: boot-partition
+        device: disk0
+        size: 2048M
+      - type: partition
+        id: root-partition
+        device: disk0
+        size: -1
+  late-commands:
+    - echo 'packer ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/packer

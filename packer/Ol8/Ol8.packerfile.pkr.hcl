@@ -2,7 +2,7 @@ packer {
   required_version = "~> 1"
   required_plugins {
     vsphere = {
-      version = "~> 1"
+      version = "~> 2"
       source  = "github.com/hashicorp/vsphere"
     }
   }
@@ -26,7 +26,7 @@ source "vsphere-iso" "vsphere" {
     "<enter><wait>"
   ]
 
-  boot_order = "disk,cdrom,floppy,ethernet"
+  boot_order = "disk,ethernet,cdrom,floppy"
   boot_wait  = "10s"
 
   http_content = {
