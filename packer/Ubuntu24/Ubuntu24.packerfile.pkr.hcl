@@ -17,11 +17,10 @@ packer {
 
 // Random packer password
 locals {
-  timestamp       = formatdate("MMDDhhmmss", timestamp())
-  vsphere_image   = "pkrbuild"
-  packer_username = "packer"
-  packer_password = "packer"
-  //   packer_password       = uuidv4()
+  timestamp             = formatdate("MMDDhhmmss", timestamp())
+  vsphere_image         = "pkrbuild"
+  packer_username       = "packer"
+  packer_password       = uuidv4()
   vsphere_guest_os_type = "ubuntu64Guest"
 }
 
@@ -49,8 +48,13 @@ source "vsphere-iso" "ubuntu24" {
   ssh_timeout         = "15m"
   http_port_min       = 1420
   http_port_max       = 1420
-  // http_directory      = "./http"
+  # cd_files = [
+  #     "cdrom/user-data",
+  #     "cdrom/meta-data"
+  #   ]
+  # cd_label = "nocloud" # Or "nocloud"
 
+  # http_directory      = "./http"
   http_content = {
     "/user-data" = templatefile("${path.root}/templates/user-data.pkrtpl.hcl", {
       packer_password = local.packer_password
@@ -62,14 +66,26 @@ source "vsphere-iso" "ubuntu24" {
 
   boot_order = "disk,cdrom"
   boot_wait  = "5s"
+
   boot_command = [
     "<esc><esc><esc>",
-    "c",
-    "<enter><wait>",
-    "/casper/vmlinuz ",
-    "initrd=/casper/initrd ",
-    "autoinstall ds=\"nocloud-net;seedfrom=http://{{ .HTTPIP }}:{{ .HTTPPort }}/cidata/",
-    "boot<enter>"
+    "e<wait>",
+    "<del><del><del><del><del><del><del><del><del><del>",
+    "<del><del><del><del><del><del><del><del><del><del>",
+    "<del><del><del><del><del><del><del><del><del><del>",
+    "<del><del><del><del><del><del><del><del><del><del>",
+    "<del><del><del><del><del><del><del><del><del><del>",
+    "<del><del><del><del><del><del><del><del><del><del>",
+    "<del><del><del><del><del><del><del><del><del><del>",
+    "<del><del><del><del><del><del><del><del><del><del>",
+    "<del><del><del><del><del><del><del><del><del><del>",
+    "<del><del><del><del><del><del><del><del><del><del>",
+    "<del><del><del><del><del><del><del><del><del><del>",
+    "<del><del><del><del><del><del><del><del><del><del>",
+    "linux /casper/vmlinuz --- autoinstall ds=\"nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/\"<enter><wait>",
+    "initrd /casper/initrd<enter><wait>",
+    "boot<enter>",
+    "<enter><f10><wait>"
   ]
 
   network_adapters {
