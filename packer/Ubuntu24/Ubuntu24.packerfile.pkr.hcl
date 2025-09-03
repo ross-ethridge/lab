@@ -52,7 +52,7 @@ source "vsphere-iso" "ubuntu24" {
   #     "cdrom/user-data",
   #     "cdrom/meta-data"
   #   ]
-  # cd_label = "nocloud" # Or "nocloud"
+  # cd_label = "nocloud" # Or "cidata"
 
   # http_directory      = "./http"
   http_content = {
