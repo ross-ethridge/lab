@@ -15,77 +15,55 @@ packer {
   }
 }
 
-// Random packer password
+// Locals
 locals {
   timestamp             = formatdate("MMDDhhmmss", timestamp())
-  vsphere_image         = "pkrbuild"
+  vsphere_image         = "pkrbuild-${local.timestamp}"
   packer_username       = "packer"
-  packer_password       = uuidv4()
   vsphere_guest_os_type = "ubuntu64Guest"
 }
 
-
 source "vsphere-iso" "ubuntu24" {
   vm_name             = local.vsphere_image
-  username            = "ross.ethridge@washco-web.com"
   ssh_username        = local.packer_username
-  host                = "esxi-01.washco-web.com"
   guest_os_type       = local.vsphere_guest_os_type
-  CPUs                = 2
-  RAM                 = 4096
-  RAM_reserve_all     = true
+  username            = var.vsphere_username
+  ssh_password        = var.packer_password
+  host                = var.vsphere_host
   password            = var.vsphere_password
   vcenter_server      = var.vsphere_server
-  ssh_password        = local.packer_password
-  remove_cdrom        = true
-  insecure_connection = true
-  iso_paths           = [var.vsphere_iso_url]
-  iso_checksum        = "none"
-  convert_to_template = true
   datacenter          = var.vsphere_datacenter
   datastore           = var.vsphere_datastore
   folder              = var.vsphere_folder
-  ssh_timeout         = "15m"
-  http_port_min       = 1420
-  http_port_max       = 1420
-  # cd_files = [
-  #     "cdrom/user-data",
-  #     "cdrom/meta-data"
-  #   ]
-  # cd_label = "nocloud" # Or "cidata"
+  iso_paths           = [var.vsphere_iso_url]
+  CPUs                = 2
+  RAM                 = 4096
+  RAM_reserve_all     = true
+  remove_cdrom        = true
+  insecure_connection = true
+  iso_checksum        = "none"
+  convert_to_template = true
+  ssh_timeout         = "30m"
+  boot_order          = "cdrom,disk"
+  boot_wait           = "5s"
 
-  # http_directory      = "./http"
-  http_content = {
-    "/user-data" = templatefile("${path.root}/templates/user-data.pkrtpl.hcl", {
-      packer_password = local.packer_password
-      host_name       = local.vsphere_image
-    }),
-    "/meta-data" = templatefile("${path.root}/templates/meta-data.pkrtpl.hcl", {
-    })
-  }
+  // Run autoinstall from the cdrom files
+  cd_files = ["cdrom/meta-data", "cdrom/user-data"]
+  cd_label = "cidata"
 
-  boot_order = "disk,cdrom"
-  boot_wait  = "5s"
 
+  // This boot command disables network because somtimes its not available and you need to install from iso
+  // if you want to enable network, remove 'network-config=disabled'
+  // Its added back inside user-data so it works on reboot.
   boot_command = [
-    "<esc><esc><esc>",
-    "e<wait>",
-    "<del><del><del><del><del><del><del><del><del><del>",
-    "<del><del><del><del><del><del><del><del><del><del>",
-    "<del><del><del><del><del><del><del><del><del><del>",
-    "<del><del><del><del><del><del><del><del><del><del>",
-    "<del><del><del><del><del><del><del><del><del><del>",
-    "<del><del><del><del><del><del><del><del><del><del>",
-    "<del><del><del><del><del><del><del><del><del><del>",
-    "<del><del><del><del><del><del><del><del><del><del>",
-    "<del><del><del><del><del><del><del><del><del><del>",
-    "<del><del><del><del><del><del><del><del><del><del>",
-    "<del><del><del><del><del><del><del><del><del><del>",
-    "<del><del><del><del><del><del><del><del><del><del>",
-    "linux /casper/vmlinuz --- autoinstall ds=\"nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/\"<enter><wait>",
-    "initrd /casper/initrd<enter><wait>",
-    "boot<enter>",
-    "<enter><f10><wait>"
+    "c",
+    "<wait3s>",
+    "linux /casper/vmlinuz quiet network-config=disabled autoinstall ds=nocloud;",
+    "<enter><wait3s>",
+    "initrd /casper/initrd",
+    "<enter><wait3s>",
+    "boot",
+    "<enter>"
   ]
 
   network_adapters {
@@ -107,10 +85,9 @@ build {
   sources = ["source.vsphere-iso.ubuntu24"]
 
   provisioner "shell" {
-    inline = ["ls /"]
-  }
-
-  provisioner "shell-local" {
-    inline = ["echo packer_password is: ${local.packer_password}"]
+    inline = [
+      "echo ${var.packer_password} | sudo -S apt-get update",
+      "echo ${var.packer_password} | sudo -S apt-get install -y build-essential git curl wget",
+    ]
   }
 }

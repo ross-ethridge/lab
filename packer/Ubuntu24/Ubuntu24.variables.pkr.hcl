@@ -1,7 +1,8 @@
 // Packer Vars
 
-variable "vsphere_iso_url" {
-  type = string
+variable "packer_password" {
+  type      = string
+  sensitive = true
 }
 
 variable "vsphere_datacenter" {
@@ -16,13 +17,16 @@ variable "vsphere_folder" {
   type = string
 }
 
-variable "vsphere_network" {
+variable "vsphere_host" {
   type = string
 }
 
-variable "vsphere_username" {
-  type      = string
-  sensitive = true
+variable "vsphere_iso_url" {
+  type = string
+}
+
+variable "vsphere_network" {
+  type = string
 }
 
 variable "vsphere_password" {
@@ -33,3 +37,11 @@ variable "vsphere_password" {
 variable "vsphere_server" {
   type = string
 }
+
+variable "vsphere_username" {
+  type      = string
+  sensitive = true
+}
+
+
+
