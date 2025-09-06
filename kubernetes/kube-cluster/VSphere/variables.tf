@@ -34,7 +34,7 @@ variable "vsphere_virtual_machine_template" {
 }
 
 // vsphere login account.
-variable "vsphere_user" {
+variable "vsphere_username" {
   type = string
 }
 

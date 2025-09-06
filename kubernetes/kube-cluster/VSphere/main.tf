@@ -19,7 +19,7 @@ terraform {
 }
 
 provider "vsphere" {
-  user                 = var.vsphere_user
+  user                 = var.vsphere_username
   password             = var.vsphere_password
   vsphere_server       = var.vsphere_server
   allow_unverified_ssl = true
@@ -59,17 +59,21 @@ data "template_file" "metadata" {
   template = file("${path.module}/templates/meta-data.tpl")
 }
 
+data "vsphere_compute_cluster" "lab" {
+  name          = "Lab"
+  datacenter_id = data.vsphere_datacenter.lab.id
+}
 
 # KubeMaster VM
 resource "vsphere_virtual_machine" "kubemaster" {
   count            = 1
-  name             = format("kubemaster-%02d", count.index) + ".${var.vsphere_virtual_machine_domain}"
+  name             = "kubemaster-0${count.index}.${var.vsphere_virtual_machine_domain}"
   datastore_id     = data.vsphere_datastore.datastore.id
   folder           = var.vsphere_virtual_machine_folder
   num_cpus         = data.vsphere_virtual_machine.vm_template.num_cpus
   memory           = data.vsphere_virtual_machine.vm_template.memory
   guest_id         = data.vsphere_virtual_machine.vm_template.guest_id
-  resource_pool_id = data.vsphere_datastore.datastore.id
+  resource_pool_id = data.vsphere_compute_cluster.lab.resource_pool_id
 
   scsi_type = data.vsphere_virtual_machine.vm_template.scsi_type
 

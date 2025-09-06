@@ -87,7 +87,7 @@ build {
   provisioner "shell" {
     inline = [
       "echo ${var.packer_password} | sudo -S apt-get update",
-      "echo ${var.packer_password} | sudo -S apt-get install -y build-essential git curl wget",
+      "echo ${var.packer_password} | sudo -S apt-get install -y build-essential git curl wget open-vm-tools",
     ]
   }
 }
