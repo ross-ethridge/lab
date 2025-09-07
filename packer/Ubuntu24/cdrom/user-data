@@ -16,17 +16,9 @@ autoinstall:
   keyboard:
     layout: us
     variant: ''
-  # This late command is because we disable the network during boot
-  # Change ens160 to whatever your interface id is
-  late-commands:
-    - |
-      chroot /target
-      mkdir -p /etc/netplan/
-      cat <<EOF > /target/etc/netplan/01-installer-config.yaml
-      network:
-        ethernets:
-          ens160:
-            dhcp4: yes
-        version: 2
-      EOF
-      netplan apply
+  network:
+    version: 2
+    renderer: networkd
+    ethernets:
+      ens160:
+        dhcp4: yes

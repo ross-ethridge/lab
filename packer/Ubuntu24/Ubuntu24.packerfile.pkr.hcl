@@ -78,18 +78,19 @@ source "vsphere-iso" "ubuntu24" {
 
 }
 
-# a build block invokes sources and runs provisioning steps on them. The
-# documentation for build blocks can be found here:
-# https://www.packer.io/docs/templates/hcl_templates/blocks/build
+
 build {
   sources = ["source.vsphere-iso.ubuntu24"]
 
   provisioner "shell" {
     inline = [
-      "echo ${var.packer_password} | sudo -S rm -f /etc/cloud/cloud.cfg.d/*",
-      "echo ${var.packer_password} | sudo -S rm -f /etc/cloud/ds-indentity.cfg",
+      "echo 'Cleaning up cloud-init files'",
+      "echo ${var.packer_password} | sudo -S cloud-init clean --logs",
       "echo ${var.packer_password} | sudo -S rm -f /etc/cloud/cloud-init.disabled",
-      "echo 'disable_vmware_customization: true' | echo ${var.packer_password} | sudo -S tee /etc/cloud/cloud.cfg.d/99-vmware-disable.cfg"
+      "echo ${var.packer_password} | sudo -S echo 'disable_vmware_customization: true' | sudo tee -a /etc/cloud/cloud.cfg",
+      "echo ${var.packer_password} | sudo -S echo 'manage_etc_hosts: false' | sudo tee -a /etc/cloud/cloud.cfg",
+      "echo ${var.packer_password} | sudo -S rm -f /etc/cloud/cloud.cfg.d/*"
     ]
   }
+
 }
