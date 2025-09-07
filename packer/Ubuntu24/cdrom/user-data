@@ -6,10 +6,6 @@ autoinstall:
     username: packer
     # the below password is 'packer' crated by: mkpasswd --method=SHA-512
     password: "$6$s8svyqmmVPmqf.C2$0QSq3Pm1SWz8JHJeL.Bqicy2lbkAOMvrppINATeZMzEPRn5FrJWO5uIBAv3zcf675Zr.FhPWwts8f6auAEqut1"
-  users:
-    - name: packer
-      sudo: ALL=(ALL) NOPASSWD:ALL
-      groups: users,adm,sudo,cdrom
   storage:
     layout:
       name: lvm

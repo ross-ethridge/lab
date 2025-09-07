@@ -29,6 +29,11 @@ data "vsphere_datacenter" "lab" {
   name = var.vsphere_datacenter
 }
 
+data "vsphere_compute_cluster" "lab" {
+  name          = "Lab"
+  datacenter_id = data.vsphere_datacenter.lab.id
+}
+
 data "vsphere_datastore" "datastore" {
   name          = var.vsphere_datastore
   datacenter_id = data.vsphere_datacenter.lab.id
@@ -45,7 +50,7 @@ data "vsphere_virtual_machine" "vm_template" {
 }
 
 data "local_file" "build_key_pub" {
-  filename = "./templates/tf_id_rsa.pub"
+  filename = "build-keys/packer-build-key.pub"
 }
 
 data "template_file" "userdata" {
@@ -59,10 +64,7 @@ data "template_file" "metadata" {
   template = file("${path.module}/templates/meta-data.tpl")
 }
 
-data "vsphere_compute_cluster" "lab" {
-  name          = "Lab"
-  datacenter_id = data.vsphere_datacenter.lab.id
-}
+
 
 # KubeMaster VM
 resource "vsphere_virtual_machine" "kubemaster" {
@@ -92,7 +94,7 @@ resource "vsphere_virtual_machine" "kubemaster" {
     template_uuid = data.vsphere_virtual_machine.vm_template.id
     customize {
       linux_options {
-        host_name = format("kubemaster-%02d", count.index)
+        host_name = "kubemaster-0${count.index}"
         domain    = var.vsphere_virtual_machine_domain
       }
       network_interface {}
@@ -105,9 +107,6 @@ resource "vsphere_virtual_machine" "kubemaster" {
     "guestinfo.metadata"          = base64encode(data.template_file.metadata.rendered)
     "guestinfo.metadata.encoding" = "base64"
   }
-
-  # tags = [
-  # 
-  # ]
+  
 
 }

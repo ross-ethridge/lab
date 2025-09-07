@@ -86,8 +86,10 @@ build {
 
   provisioner "shell" {
     inline = [
-      "echo ${var.packer_password} | sudo -S apt-get update",
-      "echo ${var.packer_password} | sudo -S apt-get install -y build-essential git curl wget open-vm-tools",
+      "echo ${var.packer_password} | sudo -S rm -f /etc/cloud/cloud.cfg.d/*",
+      "echo ${var.packer_password} | sudo -S rm -f /etc/cloud/ds-indentity.cfg",
+      "echo ${var.packer_password} | sudo -S rm -f /etc/cloud/cloud-init.disabled",
+      "echo 'disable_vmware_customization: true' | echo ${var.packer_password} | sudo -S tee /etc/cloud/cloud.cfg.d/99-vmware-disable.cfg"
     ]
   }
 }

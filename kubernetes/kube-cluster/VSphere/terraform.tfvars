@@ -6,5 +6,4 @@ vsphere_server                   = "vcenter.washco-web.com"
 vsphere_network                  = "VM Network"
 vsphere_virtual_machine_domain   = "washco-web.com"
 vsphere_virtual_machine_folder   = "VirtualMachines"
-vsphere_virtual_machine_template = "pkrbuild-0906194544"
-
+vsphere_virtual_machine_template = "pkrbuild-0907053429"
