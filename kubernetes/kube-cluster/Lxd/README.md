@@ -31,7 +31,18 @@
 
 kubeadm join 240.2.0.146:6443 --token nimjjy.h7xxxxxxxxx --discovery-token-ca-cert-hash sha256:9f9996006a105b50523385ca2c8a8blahblah77777
 ```
+## Install a CNI [like flannel]
+Run from the control plane:
+```bash
+# kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
 
+namespace/kube-flannel created
+serviceaccount/flannel created
+clusterrole.rbac.authorization.k8s.io/flannel created
+clusterrolebinding.rbac.authorization.k8s.io/flannel created
+configmap/kube-flannel-cfg created
+daemonset.apps/kube-flannel-ds created
+```
 ### Check the Cluster Status
 - Run the above command on all of your worker nodes
 - Now you should see your nodes from the KubeMaster
@@ -45,17 +56,7 @@ kubeworker1   Ready    <none>          17m    v1.34.0   240.2.0.157   <none>    
 kubeworker2   Ready    <none>          16m    v1.34.0   240.2.0.140   <none>        Ubuntu 24.04.3 LTS   6.8.0-71-generic   containerd://1.7.27
 ```
 
-## Install a CNI [like flannel]
-```bash
-# kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
 
-namespace/kube-flannel created
-serviceaccount/flannel created
-clusterrole.rbac.authorization.k8s.io/flannel created
-clusterrolebinding.rbac.authorization.k8s.io/flannel created
-configmap/kube-flannel-cfg created
-daemonset.apps/kube-flannel-ds created
-```
 
 - If you need to restart the CNI daemonset for some reason:
 ```bash

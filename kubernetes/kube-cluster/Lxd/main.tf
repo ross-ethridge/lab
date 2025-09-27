@@ -13,7 +13,7 @@ provider "lxd" {
   accept_remote_certificate    = true
   remote {
     name    = "microcloud-01"
-    address = "https://192.168.2.2:8443/"
+    address = "https://localhost:8443/"
     default = true
 
     // server: lxc config trust add --name "terraform-token"
@@ -69,8 +69,7 @@ resource "lxd_instance" "kubemaster" {
           sudo: ["ALL=(ALL) NOPASSWD:ALL"]
           shell: /bin/bash
           ssh_authorized_keys:
-            - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDN1wrYOvWiCDf7hLfN/rIq1sPyS25bLKa0dCHGEvcO/banPy7ooHCqVJgHeQNUh8gkBKSGzYoVObbrt6AIaVYndRPQhGJ5BvR1sKTxt/NOnKm2Ya0HwEK1dYX3weNzCQxq0MA8dX0HybjABRikd1+4845FjVqsWEL6hGZSS3vPFl9J/f4CO0qMk5DF3O4wQozppSaoWJtWpGsl0stVQqeTGw9f9QJ0MxQvlvNPuoFazRbvdPNjfCjnd8AEBZRJBBUEmwRhHPgBAyr0c9Bxh88yYaFXgST81/mHSjC8SAHJXQf06AQv3dxLzCPduQJa297qE0p4rE7cABGalgo69pE/ rethridge@rethridge-pc"
-            - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCshYoGv5o0T0Z8vFQvwu1vFSlWZOZEuH40FVUHH0gg1jiQhQ2JP1Sjydnj2K9ejzrzk7eJyTjTYceI5BYBj6ey02VoY1PKBYjgbYb1U/JVpJ5fP9OYzn1l3plySLW7pTB7UTE5+pBToB5tVr/D2GDnGo138+eAG89gaFZbwyczTlxcg7J+cnd1zZymSOOUUSqOoSNWtTf4lcfmOKf5sM9OGBMQPS2CWUfI39jNEOsC+BmcqLcskdwuEGAEdMxSvIvo9Otrww9wBaG3w2cvTnlrAyAGURI0w+Nt1+AOgMwoSMZ5RqjEcnxRWyGwuHI7AubqLTjq2ZSjejby8bqu8F7t rossethridge@microcloud-01"
+            - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCqdFl8zRCZRJT7X/zlUeun5muUHAMXA122GAjh94RwhH4fv0t1kTmDatrDs6oLLiYsDMU0u1BOiWPZ195D7Kbf1U/eBUVaB6BqmuqkzEW8FZos7OkuTzsxm0AaI+7mAxfGJsFhDzNQOnKiZO8Emc5VlP3zMFxZOTfsBLwWraEDfiSjQe9YXv1ukQN6jVp6pTc38G2BGmGp+1Orrans5ewSuHjpg6ROHbjhonn3HN8fc6M8rxg6M7mnyReZRuQ5nr/OibHmk+hEUI0EPB++nUtF+LYTCw1JR2rhYfJ3LzfFCn/iQhPYt2ploonAXj8ZUh66Bkyk74gzT/h4gzZB6fSj UbuntuDesktopKey"
 
       runcmd:
         - mkdir -p /etc/apt/keyrings
@@ -95,6 +94,7 @@ resource "lxd_instance" "kubemaster" {
         - echo "net.ipv4.ip_forward = 1" | tee -a /etc/sysctl.conf
         - echo "net.bridge.bridge-nf-call-iptables = 1" | tee -a /etc/sysctl.conf
         - sysctl -p /etc/sysctl.conf
+        - echo "br_netfilter" | sudo tee -a /etc/modules-load.d/modules.conf
         - systemctl enable containerd
         - systemctl enable kubelet
         - systemctl restart containerd.service
@@ -158,8 +158,7 @@ resource "lxd_instance" "kubeworker" {
           sudo: ["ALL=(ALL) NOPASSWD:ALL"]
           shell: /bin/bash
           ssh_authorized_keys:
-            - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDN1wrYOvWiCDf7hLfN/rIq1sPyS25bLKa0dCHGEvcO/banPy7ooHCqVJgHeQNUh8gkBKSGzYoVObbrt6AIaVYndRPQhGJ5BvR1sKTxt/NOnKm2Ya0HwEK1dYX3weNzCQxq0MA8dX0HybjABRikd1+4845FjVqsWEL6hGZSS3vPFl9J/f4CO0qMk5DF3O4wQozppSaoWJtWpGsl0stVQqeTGw9f9QJ0MxQvlvNPuoFazRbvdPNjfCjnd8AEBZRJBBUEmwRhHPgBAyr0c9Bxh88yYaFXgST81/mHSjC8SAHJXQf06AQv3dxLzCPduQJa297qE0p4rE7cABGalgo69pE/ rethridge@rethridge-pc"
-            - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCshYoGv5o0T0Z8vFQvwu1vFSlWZOZEuH40FVUHH0gg1jiQhQ2JP1Sjydnj2K9ejzrzk7eJyTjTYceI5BYBj6ey02VoY1PKBYjgbYb1U/JVpJ5fP9OYzn1l3plySLW7pTB7UTE5+pBToB5tVr/D2GDnGo138+eAG89gaFZbwyczTlxcg7J+cnd1zZymSOOUUSqOoSNWtTf4lcfmOKf5sM9OGBMQPS2CWUfI39jNEOsC+BmcqLcskdwuEGAEdMxSvIvo9Otrww9wBaG3w2cvTnlrAyAGURI0w+Nt1+AOgMwoSMZ5RqjEcnxRWyGwuHI7AubqLTjq2ZSjejby8bqu8F7t rossethridge@microcloud-01"
+            - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCqdFl8zRCZRJT7X/zlUeun5muUHAMXA122GAjh94RwhH4fv0t1kTmDatrDs6oLLiYsDMU0u1BOiWPZ195D7Kbf1U/eBUVaB6BqmuqkzEW8FZos7OkuTzsxm0AaI+7mAxfGJsFhDzNQOnKiZO8Emc5VlP3zMFxZOTfsBLwWraEDfiSjQe9YXv1ukQN6jVp6pTc38G2BGmGp+1Orrans5ewSuHjpg6ROHbjhonn3HN8fc6M8rxg6M7mnyReZRuQ5nr/OibHmk+hEUI0EPB++nUtF+LYTCw1JR2rhYfJ3LzfFCn/iQhPYt2ploonAXj8ZUh66Bkyk74gzT/h4gzZB6fSj UbuntuDesktopKey"
 
       runcmd:
         - mkdir -p /etc/apt/keyrings
@@ -184,6 +183,7 @@ resource "lxd_instance" "kubeworker" {
         - echo "net.ipv4.ip_forward = 1" | tee -a /etc/sysctl.conf
         - echo "net.bridge.bridge-nf-call-iptables = 1" | tee -a /etc/sysctl.conf
         - sysctl -p /etc/sysctl.conf
+        - echo "br_netfilter" | sudo tee -a /etc/modules-load.d/modules.conf
         - systemctl enable containerd
         - systemctl enable kubelet
         - systemctl restart containerd.service
