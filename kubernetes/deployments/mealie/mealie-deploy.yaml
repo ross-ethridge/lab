@@ -19,8 +19,8 @@ spec:
         - image: ghcr.io/mealie-recipes/mealie:v3.0.2
           name: mealie
           volumeMounts:
-            - mountPath: /app/data
-              name: mealie-data
+            - name: mealie-data
+              mountPath: /app/data
           ports:
             - containerPort: 9000
       volumes:

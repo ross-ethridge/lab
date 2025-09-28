@@ -7,11 +7,11 @@ metadata:
   namespace: mealie
 spec:
   selector:
-    app: mealy
+    app: mealie
   type: NodePort
   ports:
-    - name: mealy-service
-      port: 9000
+    - name: mealie-service
       protocol: TCP
+      port: 9000
       targetPort: 9000
-      nodePort: 309000
+      nodePort: 30900
