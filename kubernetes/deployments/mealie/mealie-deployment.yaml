@@ -18,6 +18,11 @@ spec:
       containers:
         - image: ghcr.io/mealie-recipes/mealie:v3.0.2
           name: mealie
+          env:
+            - name: OPENAI_API_KEY
+              value: "${OPENAI_API_KEY}"
+            - name: BASE_URL
+              value: "https://mealie.washco-web.com"
           volumeMounts:
             - name: mealie-data
               mountPath: /app/data
@@ -27,4 +32,5 @@ spec:
         - name: mealie-data
           persistentVolumeClaim:
             claimName: mealie-data
+      
 

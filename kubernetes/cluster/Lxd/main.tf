@@ -32,6 +32,7 @@ resource "lxd_storage_pool" "kubemaster_pool" {
 // KubeMaster VM Instance
 resource "lxd_instance" "kubemaster" {
   depends_on = [lxd_storage_pool.kubemaster_pool]
+  profiles   = ["host-profile"]
   type       = "virtual-machine"
   name       = "kubemaster"
   image      = "ubuntu:24.04"
@@ -99,6 +100,7 @@ resource "lxd_instance" "kubemaster" {
         - systemctl enable kubelet
         - systemctl restart containerd.service
         - systemctl restart kubelet.service
+        - mkdir /data
       EOF
   }
 
@@ -120,6 +122,7 @@ resource "lxd_storage_pool" "kubeworker_pool" {
 // KubeWorker VM Instance(s)
 resource "lxd_instance" "kubeworker" {
   depends_on = [lxd_storage_pool.kubeworker_pool]
+  profiles   = ["host-profile"]
   count      = 3
   type       = "virtual-machine"
   name       = "kubeworker${count.index}"
@@ -188,6 +191,7 @@ resource "lxd_instance" "kubeworker" {
         - systemctl enable kubelet
         - systemctl restart containerd.service
         - systemctl restart kubelet.service
+        - mkdir /data
       EOF
   }
 

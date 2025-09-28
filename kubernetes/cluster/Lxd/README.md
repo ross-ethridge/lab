@@ -22,15 +22,6 @@
 ```bash
 # kubeadm init --control-plane-endpoint=$(hostname -f) --node-name=$(hostname -f) --pod-network-cidr=10.244.0.0/16
 ```
-
-## Join Nodes to the Cluster
-- Now we join our worker nodes to the cluster
-- To get the join command, run this from the KubeMaster:
-```bash
-# kubeadm token create --print-join-command
-
-kubeadm join 240.2.0.146:6443 --token nimjjy.h7xxxxxxxxx --discovery-token-ca-cert-hash sha256:9f9996006a105b50523385ca2c8a8blahblah77777
-```
 ## Install a CNI [like flannel]
 Run from the control plane:
 ```bash
@@ -43,6 +34,16 @@ clusterrolebinding.rbac.authorization.k8s.io/flannel created
 configmap/kube-flannel-cfg created
 daemonset.apps/kube-flannel-ds created
 ```
+
+## Join Nodes to the Cluster
+- Now we join our worker nodes to the cluster
+- To get the join command, run this from the KubeMaster:
+```bash
+# kubeadm token create --print-join-command
+
+kubeadm join 240.2.0.146:6443 --token nimjjy.h7xxxxxxxxx --discovery-token-ca-cert-hash sha256:9f9996006a105b50523385ca2c8a8blahblah77777
+```
+
 ### Check the Cluster Status
 - Run the above command on all of your worker nodes
 - Now you should see your nodes from the KubeMaster
