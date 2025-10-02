@@ -49,7 +49,7 @@ kubectl -n monitoring expose service prometheus-stack-kube-prom-alertmanager --t
 ```bash
 kubectl apply -f .
 ```
-- The services should be visible on every NodePort with the port I defined as nodePort in the yaml files.
+- The services should be visible on every node with the port I defined as nodePort in the yaml files.
     - Prometheus on ports 30600, 30601
     - AlertManager on ports 30602, 30603
     - Grafana on port 30604
