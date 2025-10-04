@@ -24,7 +24,7 @@ Get Grafana 'admin' user password by running:
   kubectl --namespace monitoring get secrets prometheus-stack-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
 ```
 ## Exposing the monitoring services outside the cluster
-- When we deploy the Helm chart, all the services are ClusterIP servvices. We can expose them for our load balancer by making ```NodePort``` services for UI elements.
+- When we deploy the Helm chart, all the services are ClusterIP services. We can expose them for our load balancer by making ```NodePort``` services for UI the elements.
 ```bash
 kubectl get svc -n monitoring
 NAME                                        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                         AGE
