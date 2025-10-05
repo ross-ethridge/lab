@@ -16,7 +16,7 @@ spec:
         app: openweb
     spec:
       containers:
-        - image: ghcr.io/open-webui/open-webui:main
+        - image: ghcr.io/open-webui/open-webui:latest
           name: openweb
           env:
             - name: OPENAI_API_KEY
@@ -24,11 +24,11 @@ spec:
             - name: BASE_URL
               value: "https://ai.washco-web.com"
           volumeMounts:
-            - name: openweb-data
-              mountPath: /app/data
+            - name: openweb-nfs-pv
+              mountPath: /app/backend/data
           ports:
             - containerPort: 8080
       volumes:
-        - name: openweb-data
+        - name: openweb-nfs-pv
           persistentVolumeClaim:
-            claimName: openweb-data
+            claimName: openweb-nfs-pvc

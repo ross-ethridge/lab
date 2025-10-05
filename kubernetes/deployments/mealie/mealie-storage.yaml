@@ -1,49 +1,32 @@
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: local-storage
-  namespace: mealie
-provisioner: kubernetes.io/no-provisioner
-reclaimPolicy: Retain
 ---
-
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: mealie-data
-  namespace: mealie
+  name: mealie-nfs-pv
 spec:
   capacity:
-    storage: 10Gi
+    storage: 20Gi
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: local-storage
-  local:
-    path: "/data" # Path on the node's filesystem
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: kubernetes.io/hostname
-          operator: In
-          values:
-          - kubeworker0
-          - kubeworker1
-          - kubeworker2
----
+  mountOptions:
+    - hard
+    - noatime
+    - vers=4
+  nfs:
+    path: "/export/mealie/pvc"
+    server: "192.168.2.2"
+    readOnly: false
 
-apiVersion: v1
+---
 kind: PersistentVolumeClaim
+apiVersion: v1
 metadata:
-  name: mealie-data
+  name: mealie-nfs-pvc
   namespace: mealie
 spec:
   accessModes:
-    - ReadWriteOnce
-  storageClassName: "local-storage"
-  volumeName: mealie-data
-  volumeMode: Filesystem
+    - ReadWriteMany
   resources:
     requests:
-      storage: 10Gi
+      storage: 20Gi

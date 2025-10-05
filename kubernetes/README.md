@@ -520,6 +520,14 @@ grafana:
 Release "prometheus-stack" has been upgraded. Happy Helming!
 ```
 
+## Pruning unused images.
+- Sometimes your nodes have a lot of unused images and you need to free up some disk space.
+You can prune the images with this command:
+```bash
+# execute or schedule on each node
+crictl rmi --prune
+```
+
 ## Managed Kubernetes on EKS
 - EKS is the managed Kube cluster service provided by AWS.
 - Maintains the master nodes

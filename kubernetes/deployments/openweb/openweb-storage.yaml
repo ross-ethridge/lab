@@ -1,49 +1,32 @@
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: local-storage
-  namespace: openweb
-provisioner: kubernetes.io/no-provisioner
-reclaimPolicy: Retain
 ---
-
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: openweb-data
-  namespace: openweb
+  name: openweb-nfs-pv
 spec:
   capacity:
-    storage: 10Gi
+    storage: 100Gi
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: local-storage
-  local:
-    path: "/data" # Path on the node's filesystem
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: kubernetes.io/hostname
-          operator: In
-          values:
-          - kubeworker0
-          - kubeworker1
-          - kubeworker2
----
+  mountOptions:
+    - hard
+    - noatime
+    - vers=4
+  nfs:
+    path: "/export/openweb/pvc"
+    server: "192.168.2.2"
+    readOnly: false
 
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: openweb-data
+  name: openweb-nfs-pvc
   namespace: openweb
 spec:
   accessModes:
-    - ReadWriteOnce
-  storageClassName: "local-storage"
-  volumeName: openweb-data
-  volumeMode: Filesystem
+    - ReadWriteMany
   resources:
     requests:
-      storage: 10Gi
+      storage: 100Gi
