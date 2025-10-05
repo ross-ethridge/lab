@@ -1,0 +1,6 @@
+prometheus:
+  prometheusSpec:
+    additionalScrapeConfigs: |
+      - job_name: 'lootavelli-scrape'
+        static_configs:
+          - targets: ['192.168.2.2:9100']
