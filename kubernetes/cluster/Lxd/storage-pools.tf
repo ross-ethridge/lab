@@ -38,3 +38,13 @@ resource "lxd_storage_pool" "openweb" {
     size = "100GiB"
   }
 }
+
+// Storage pool for vault
+resource "lxd_storage_pool" "vault" {
+  name        = "vault"
+  driver      = "zfs"
+  description = "Storage pool for vault"
+  config = {
+    size = "20GiB"
+  }
+}

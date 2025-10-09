@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vault-deployment
+spec:
+  replicas: 3 # Number of Vault pods you want to run
+  selector:
+    matchLabels:
+      app: vault
+  template:
+    metadata:
+      labels:
+        app: vault
+    spec:
+      containers:
+      - name: vault
+        image: vault/tls:v1.0.2
+        command: ["vault", "server"]
+        args: ["-config=/etc/vault/config/", "-tls-cert-file=/etc/vault/tls/cert.pem", "-tls-key-file=/etc/vault/tls/key.pem"]
+        volumeMounts:
+          - mountPath: /etc/vault/config/
+            name: vault-config-volume
+          - mountPath: /etc/vault/tls/
+            name: tls-certs-volume
+      volumes:
+      - name: vault-config-volume
+        persistentVolumeClaim:
+          claimName: vault-pvc
+      - name: tls-certs-volume
+        secret:
+          secretName: my-tls-secret # Replace with your actual secret name if using TLS certificates
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: my-tls-secret
+data:
+  cert.pem: <base64_encoded_cert>
+  key.pem: <base64_encoded_key>
+type: kubernetes.io/tls

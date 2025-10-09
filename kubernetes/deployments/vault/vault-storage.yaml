@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: vault-nfs-pv
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  mountOptions:
+    - hard
+    - noatime
+    - vers=4
+  nfs:
+    path: "/export/vault/pvc"
+    server: "192.168.2.2"
+    readOnly: false
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: vault-nfs-pvc
+  namespace: vault
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 20Gi
