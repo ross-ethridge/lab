@@ -11,7 +11,7 @@ and prints the response.  It demonstrates:
 
 import os
 import sys
-from openai import OpenAI
+import openai
 from typing import Optional
 
 # ----------------------------------------------------------------------
@@ -25,7 +25,7 @@ if not API_KEY:
     print("       setx OPENAI_API_KEY 'sk-…'    # Windows")
     sys.exit(1)
 
-client = OpenAI(api_key=API_KEY)
+client = openai.OpenAI(api_key=API_KEY)
 # ----------------------------------------------------------------------
 # 2️⃣  Helper: ask a question and get a response
 # ----------------------------------------------------------------------
