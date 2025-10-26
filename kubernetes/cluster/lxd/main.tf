@@ -24,7 +24,7 @@ provider "lxd" {
   accept_remote_certificate    = true
   remote {
     name    = "lootavelli"
-    address = "https://lootavelli.washco-web.com:8443/"
+    address = "https://lootavelli.washco-web.com:8443"
     default = true
 
     // server: lxc config trust add --name "terraform-token"

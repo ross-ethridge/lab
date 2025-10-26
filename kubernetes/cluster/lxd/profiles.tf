@@ -30,15 +30,12 @@ resource "lxd_profile" "rke1" {
       version: 2
       ethernets:
         enp5s0:
-          addresses:
-            - "${var.ip_address["lab"].rke1}"
+          dhcp4: true
+          dhcp6: false
           nameservers:
             addresses:
               - 1.1.1.1
-              - 192.168.2.1
-          routes:
-            - to: 0.0.0.0/0
-              via: 192.168.2.1
+              - 24.48.160.2
     EOT
   }
 }
