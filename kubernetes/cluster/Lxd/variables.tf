@@ -4,14 +4,14 @@ variable "lxd_token" {
 }
 
 variable "ip_address" {
-  description = "Node IP addresses."
+  description = "IP addresses."
   type = map(object({
     rke1 = string
 
   }))
   default = {
     "lab" = {
-      rke1 = "192.168.2.101/24"
+      rke1 = "192.168.1.101/24"
     }
   }
 }

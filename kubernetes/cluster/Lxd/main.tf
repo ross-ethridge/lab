@@ -34,7 +34,7 @@ provider "lxd" {
 }
 
 
-// KubeMaster VM Instance
+// RKE1 VM Instance
 resource "lxd_instance" "rke1" {
   depends_on = [
     lxd_storage_pool.rke1,
@@ -50,7 +50,7 @@ resource "lxd_instance" "rke1" {
     type = "disk"
     properties = {
       pool = lxd_storage_pool.rke1.name
-      size = "50GiB"
+      size = "100GiB"
       path = "/"
     }
   }
@@ -99,7 +99,13 @@ resource "lxd_instance" "rke1" {
         - sysctl -p /etc/sysctl.conf
         - echo "br_netfilter" | sudo tee -a /etc/modules-load.d/modules.conf
         - mkdir /data
-      EOF
+
+      write_files:
+        - path: /etc/hosts
+          append: true
+          content: |
+            127.0.1.1 rancher.washco-web.com
+    EOF
   }
 }
 

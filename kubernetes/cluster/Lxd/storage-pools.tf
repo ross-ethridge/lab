@@ -4,6 +4,6 @@ resource "lxd_storage_pool" "rke1" {
   driver      = "zfs"
   description = "Storage pool for rke1"
   config = {
-    size = "50GiB"
+    size = "100GiB"
   }
 }

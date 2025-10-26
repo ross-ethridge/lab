@@ -10,7 +10,7 @@ resource "lxd_profile" "rke1" {
     properties = {
       pool = "kubemaster-pool"
       path = "/"
-      size = "50GiB"
+      size = "100GiB"
     }
   }
 
@@ -25,7 +25,7 @@ resource "lxd_profile" "rke1" {
 
   config = {
     "limits.cpu"          = 4
-    "limits.memory"       = "4GiB"
+    "limits.memory"       = "8GiB"
     "user.network-config" = <<-EOT
       version: 2
       ethernets:
