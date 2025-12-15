@@ -1,0 +1,22 @@
+# values.yaml
+ingress:
+  enabled: true
+  ingressClassName: "cilium"
+  annotations:
+    # Add any necessary annotations for your specific ingress controller (e.g., cert-manager, external-dns, etc.)
+    # kubernetes.io/ingress.class: nginx # if using an older ingress controller
+    # alb.ingress.kubernetes.io/scheme: internet-facing # Example for AWS ALB
+  hosts:
+    - host: grafana.chingadero.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: grafana-tls-secret
+      hosts:
+        - grafana.chingadero.com
+#persistence:
+#  enabled: true
+#  storageClassName: "your-storage-class" # Use an existing StorageClass in your cluster (e.g., "rancher-longhorn")
+#  size: 10Gi
+

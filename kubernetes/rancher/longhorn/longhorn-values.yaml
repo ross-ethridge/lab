@@ -1,0 +1,283 @@
+global:
+  imageRegistry: ""
+  imagePullSecrets: []
+  tolerations: []
+  nodeSelector: {}
+  cattle:
+    systemDefaultRegistry: ""
+    windowsCluster:
+      enabled: false
+      tolerations:
+        - key: "cattle.io/os"
+          value: "linux"
+          effect: "NoSchedule"
+          operator: "Equal"
+      nodeSelector:
+        kubernetes.io/os: "linux"
+      defaultSetting:
+        taintToleration: cattle.io/os=linux:NoSchedule
+        systemManagedComponentsNodeSelector: kubernetes.io/os:linux
+networkPolicies:
+  enabled: false
+  type: "k3s"
+image:
+  longhorn:
+    engine:
+      registry: ""
+      repository: longhornio/longhorn-engine
+      tag: v1.10.1
+    manager:
+      registry: ""
+      repository: longhornio/longhorn-manager
+      tag: v1.10.1
+    ui:
+      registry: ""
+      repository: longhornio/longhorn-ui
+      tag: v1.10.1
+    instanceManager:
+      registry: ""
+      repository: longhornio/longhorn-instance-manager
+      tag: v1.10.1
+    shareManager:
+      registry: ""
+      repository: longhornio/longhorn-share-manager
+      tag: v1.10.1
+    backingImageManager:
+      registry: ""
+      repository: longhornio/backing-image-manager
+      tag: v1.10.1
+    supportBundleKit:
+      registry: ""
+      repository: longhornio/support-bundle-kit
+      tag: v0.0.71
+  csi:
+    attacher:
+      registry: ""
+      repository: longhornio/csi-attacher
+      tag: v4.10.0-20251030
+    provisioner:
+      registry: ""
+      repository: longhornio/csi-provisioner
+      tag: v5.3.0-20251030
+    nodeDriverRegistrar:
+      registry: ""
+      repository: longhornio/csi-node-driver-registrar
+      tag: v2.15.0-20251030
+    resizer:
+      registry: ""
+      repository: longhornio/csi-resizer
+      tag: v1.14.0-20251030
+    snapshotter:
+      registry: ""
+      repository: longhornio/csi-snapshotter
+      tag: v8.4.0-20251030
+    livenessProbe:
+      registry: ""
+      repository: longhornio/livenessprobe
+      tag: v2.17.0-20251030
+  openshift:
+    oauthProxy:
+      registry: ""
+      repository: ""
+      tag: ""
+  pullPolicy: IfNotPresent
+service:
+  ui:
+    type: ClusterIP
+    nodePort: null
+    annotations: {}
+  manager:
+    type: ClusterIP
+    nodePort: ""
+persistence:
+  defaultClass: true
+  defaultFsType: ext4
+  defaultMkfsParams: ""
+  defaultClassReplicaCount: 1
+  defaultDataLocality: disabled
+  reclaimPolicy: Delete
+  volumeBindingMode: "WaitForFirstConsumer"
+  migratable: false
+  disableRevisionCounter: "true"
+  nfsOptions: ""
+  recurringJobSelector:
+    enable: false
+    jobList: []
+  backingImage:
+    enable: false
+    name: ~
+    dataSourceType: ~
+    dataSourceParameters: ~
+    expectedChecksum: ~
+  defaultDiskSelector:
+    enable: false
+    selector: ""
+  defaultNodeSelector:
+    enable: false
+    selector: ""
+  unmapMarkSnapChainRemoved: ignored
+  dataEngine: v1
+  backupTargetName: default
+preUpgradeChecker:
+  jobEnabled: true
+  upgradeVersionCheck: true
+csi:
+  kubeletRootDir: ~
+  attacherReplicaCount: 1
+  provisionerReplicaCount: 1
+  resizerReplicaCount: 1
+  snapshotterReplicaCount: 1
+defaultSettings:
+  allowRecurringJobWhileVolumeDetached: ~
+  createDefaultDiskLabeledNodes: ~
+  defaultDataPath: /export/longhorn
+  defaultDataLocality: strict-local
+  replicaSoftAntiAffinity: false
+  replicaAutoBalance: false
+  storageOverProvisioningPercentage: ~
+  storageMinimalAvailablePercentage: ~
+  storageReservedPercentageForDefaultDisk: ~
+  upgradeChecker: ~
+  upgradeResponderURL: ~
+  defaultReplicaCount: 1
+  defaultLonghornStaticStorageClass: ~
+  failedBackupTTL: ~
+  backupExecutionTimeout: ~
+  restoreVolumeRecurringJobs: ~
+  recurringSuccessfulJobsHistoryLimit: ~
+  recurringFailedJobsHistoryLimit: ~
+  recurringJobMaxRetention: ~
+  supportBundleFailedHistoryLimit: ~
+  taintToleration: ~
+  systemManagedComponentsNodeSelector: ~
+  priorityClass: &defaultPriorityClassNameRef "longhorn-critical"
+  autoSalvage: ~
+  autoDeletePodWhenVolumeDetachedUnexpectedly: ~
+  blacklistForAutoDeletePodWhenVolumeDetachedUnexpectedly: ~
+  disableSchedulingOnCordonedNode: ~
+  replicaZoneSoftAntiAffinity: ~
+  replicaDiskSoftAntiAffinity: ~
+  nodeDownPodDeletionPolicy: ~
+  nodeDrainPolicy: ~
+  detachManuallyAttachedVolumesWhenCordoned: ~
+  replicaReplenishmentWaitInterval: ~
+  concurrentReplicaRebuildPerNodeLimit: ~
+  concurrentVolumeBackupRestorePerNodeLimit: ~
+  disableRevisionCounter: '{"v1":"true"}'
+  systemManagedPodsImagePullPolicy: ~
+  allowVolumeCreationWithDegradedAvailability: ~
+  autoCleanupSystemGeneratedSnapshot: ~
+  autoCleanupRecurringJobBackupSnapshot: ~
+  concurrentAutomaticEngineUpgradePerNodeLimit: ~
+  backingImageCleanupWaitInterval: ~
+  backingImageRecoveryWaitInterval: ~
+  guaranteedInstanceManagerCPU: ~
+  kubernetesClusterAutoscalerEnabled: ~
+  orphanResourceAutoDeletion: ~
+  orphanResourceAutoDeletionGracePeriod: ~
+  storageNetwork: ~
+  deletingConfirmationFlag: true
+  engineReplicaTimeout: ~
+  snapshotDataIntegrity: ~
+  snapshotDataIntegrityImmediateCheckAfterSnapshotCreation: ~
+  snapshotDataIntegrityCronjob: ~
+  removeSnapshotsDuringFilesystemTrim: ~
+  fastReplicaRebuildEnabled: ~
+  replicaFileSyncHttpClientTimeout: ~
+  longGRPCTimeOut: ~
+  logLevel: ~
+  logPath: ~
+  backupCompressionMethod: ~
+  backupConcurrentLimit: ~
+  defaultBackupBlockSize: ~
+  restoreConcurrentLimit: ~
+  v1DataEngine: ~
+  v2DataEngine: ~
+  dataEngineHugepageEnabled: ~
+  dataEngineMemorySize: ~
+  dataEngineCPUMask: ~
+  replicaRebuildingBandwidthLimit: ~
+  instanceManagerPodLivenessProbeTimeout: ~
+  allowEmptyNodeSelectorVolume: ~
+  allowEmptyDiskSelectorVolume: ~
+  allowCollectingLonghornUsageMetrics: ~
+  disableSnapshotPurge: ~
+  snapshotMaxCount: ~
+  dataEngineLogLevel: ~
+  dataEngineLogFlags: ~
+  freezeFilesystemForSnapshot: ~
+  autoCleanupSnapshotWhenDeleteBackup: ~
+  autoCleanupSnapshotAfterOnDemandBackupCompleted: ~
+  rwxVolumeFastFailover: ~
+  offlineReplicaRebuilding: ~
+defaultBackupStore:
+  backupTarget: ~
+  backupTargetCredentialSecret: ~
+  pollInterval: ~
+privateRegistry:
+  createSecret: ~
+  registryUrl: ~
+  registryUser: ~
+  registryPasswd: ~
+  registrySecret: ~
+longhornManager:
+  log:
+    format: plain
+  priorityClass: *defaultPriorityClassNameRef
+  tolerations: []
+  nodeSelector: {}
+  serviceAnnotations: {}
+longhornDriver:
+  log:
+    format: plain
+  priorityClass: *defaultPriorityClassNameRef
+  tolerations: []
+  nodeSelector: {}
+longhornUI:
+  replicas: 1
+  priorityClass: *defaultPriorityClassNameRef
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                    - longhorn-ui
+            topologyKey: kubernetes.io/hostname
+  tolerations: []
+  nodeSelector: {}
+ingress:
+  enabled: false
+  host: longhorn.chingadero.com
+  tls: false
+  secureBackends: false
+  tlsSecret: longhorn.local-tls
+  path: /
+  pathType: Prefix
+  secrets:
+enablePSP: false
+namespaceOverride: ""
+annotations: {}
+serviceAccount:
+  annotations: {}
+metrics:
+  serviceMonitor:
+    enabled: false
+    additionalLabels: {}
+    annotations: {}
+    interval: ""
+    scrapeTimeout: ""
+    relabelings: []
+    metricRelabelings: []
+openshift:
+  enabled: false
+  ui:
+    route: "longhorn-ui"
+    port: 443
+    proxy: 8443
+enableGoCoverDir: false
+extraObjects: []

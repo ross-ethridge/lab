@@ -1,0 +1,61 @@
+tenant:
+  name: minio-tenant
+  image:
+    repository: minio/minio
+    tag: RELEASE.2025-09-07T16-13-09Z
+  pools:
+    - servers: 1
+      name: pool-0
+      volumesPerServer: 1
+      size: 100Gi
+      storageClassName: longhorn
+  buckets: []
+  users: []
+  certificate:
+    requestAutoCert: false
+  externalCertSecret: minio-tenant-tls
+
+  exposeServices:
+    minio: false
+    console: false
+  prometheusOperator: true
+  
+  ingress:
+    api:
+      enabled: true
+      ingressClassName: "cilium"
+      labels: { }
+      annotations: { }
+      hosts:
+        - minio.chingadero.com
+      tls:
+        - hosts:
+            - minio.chingadero.com
+          secretName: minio-api-tls
+
+    console:
+      enabled: true
+      ingressClassName: "cilium"
+      labels: { }
+      annotations: { }
+      hosts:
+        - minio-console.chingadero.com
+      tls:
+        - hosts:
+          - minio-console.chingadero.com
+          secretName: minio-tenant-tls
+  configSecret:
+    name: minio-env-configuration
+    existingSecret: true
+extraResources:
+  - |
+    apiVersion: v1
+    kind: Secret
+    type: Opaque
+    metadata:
+      name: minio-env-configuration
+      namespace: minio-tenant
+    stringData:
+      config.env: |-
+        export MINIO_ROOT_USER=""
+        export MINIO_ROOT_PASSWORD=""
