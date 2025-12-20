@@ -3,8 +3,9 @@ k8sServiceHost: 127.0.0.1
 k8sServicePort: '6443'
 ingressController:
   enabled: true
-  loadbalancerMode: shared
   default: true
+  service:
+    type: ClusterIP
 operator:
   replicas: 1
 hubble:
@@ -18,3 +19,4 @@ ipam:
   mode: kubernetes
 gatewayAPI:
   enabled: true
+
