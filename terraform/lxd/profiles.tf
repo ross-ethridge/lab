@@ -19,7 +19,7 @@ resource "lxd_profile" "rke1" {
     name = "enp5s0"
     properties = {
       nictype = "macvlan"
-      parent  = "enp108s0"
+      parent  = "lxdbr0"
     }
   }
 
@@ -35,7 +35,7 @@ resource "lxd_profile" "rke1" {
           nameservers:
             addresses:
               - 1.1.1.1
-              - 24.48.160.2
+              - 8.8.8.8
     EOT
   }
 }

@@ -23,8 +23,8 @@ provider "lxd" {
   generate_client_certificates = true
   accept_remote_certificate    = true
   remote {
-    name    = "lootavelli"
-    address = "https://lootavelli.washco-web.com:8443"
+    name    = "lxd"
+    address = "https://lxd.chingadero.com:8443"
     default = true
 
     // server: lxc config trust add --name "terraform-token"
@@ -83,15 +83,9 @@ resource "lxd_instance" "rke1" {
           sudo: ["ALL=(ALL) NOPASSWD:ALL"]
           shell: /bin/bash
           ssh_authorized_keys:
-            - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC6V3imtW9VghfTuR7tZdDDj0baqYgUmRJZz2tWxiSmAAXCRTK6LEXHz1ZrBRhAwA5bNYwaMd8rGguKJrMKUsx7fpCMwnQKRqfoh1qiAtfxid2IGBPqi8xBlL1xqYyNt1TMD+1GUKd1qltunz0nM9KIddgu4bQWcC0o/WAbJ4Cz1lq+3GiEaWra/HUDQBPgC4ccAv/pTz609JRiHpHO0LHfqECKiSK2pQz2OvMhY9zNZErXUWFcH/GNN/PJQfj3GgEhuiRYxVynMbaxgp+5fvOFrpMb5BWOfjL8fg6N3vizAQWvnoDTsBTKstvY0QMsA0B8RtUAOaF96nNlbF3mwLI9 rossethridge@lootavelli.washco-web.com"
+            - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCzXWSD4lP+DwrWDm43NzxmhloNg/XBGCIOeexWl8xN85OXy3D5zGirDWLL6VuRqYUEXycvWt5p+2TvfJ3Wj1tD9GfcAuJOiuEXDfL7ktFfhqdGri3sbI0V1KVbMdJ5UOfwa3LIROl6EHedMq2Z9pf9Yfj8hlNSBDkMKUMkJlVjmIk4LNIbDnQK2gHrS37R+KS63Q7Eu/VUoP+AdOiyocnPCtUEekDt3S28vGoXdqnE1FE6LO+K1y3o00yyDa+AIHsBDWrN9dD8AJuSKx9dRymPtMuONzEWULFp4Fy094wEXsgkBH8V0bSTGeEyJ2HxD+9f51OcY+cQSvR3roZd8zx7eLCmXZx/jjFGjIMTLTMZhamgRsrE6vURYU5X/W7Lh5IjgoIHqxnsFO44LeoBwPaLvkgoQBEScNpRk4ijzpfT3yxRa4x0CPYAUbW9CgQLpqPNxOhQd+akOutVCkwAa6TEw++apfc/TdPxSNLSX5CVqeirmTSKqHhURsbylFXjMaE= ross@notebook"
 
       runcmd:
-        - mkdir -p /etc/apt/keyrings
-        - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-        - curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.34/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-        - bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)" --prefix=/usr/local
-        - cp /usr/local/share/oh-my-bash/bashrc ~rossethridge/.bashrc
-        - cp /usr/local/share/oh-my-bash/bashrc ~/.bashrc
         - modprobe br_netfilter
         - modprobe bridge
         - echo "net.ipv4.ip_forward = 1" | tee -a /etc/sysctl.conf
