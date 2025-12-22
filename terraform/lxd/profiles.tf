@@ -18,7 +18,7 @@ resource "lxd_profile" "rke1" {
     type = "nic"
     name = "enp5s0"
     properties = {
-      nictype = "macvlan"
+      nictype = "bridged"
       parent  = "lxdbr0"
     }
   }

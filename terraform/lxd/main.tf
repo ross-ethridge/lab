@@ -94,11 +94,6 @@ resource "lxd_instance" "rke1" {
         - echo "br_netfilter" | sudo tee -a /etc/modules-load.d/modules.conf
         - mkdir /data
 
-      write_files:
-        - path: /etc/hosts
-          append: true
-          content: |
-            127.0.1.1 rancher.washco-web.com
     EOF
   }
 }
