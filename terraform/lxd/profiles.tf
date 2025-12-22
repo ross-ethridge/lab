@@ -34,8 +34,8 @@ resource "lxd_profile" "rke1" {
           dhcp6: false
           nameservers:
             addresses:
+              - 10.5.218.1
               - 1.1.1.1
-              - 8.8.8.8
     EOT
   }
 }
@@ -82,7 +82,6 @@ resource "lxd_profile" "rke2" {
     EOT
   }
 }
-
 
 
 // Profile for rke3
