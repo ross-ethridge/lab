@@ -130,7 +130,7 @@ csi:
 defaultSettings:
   allowRecurringJobWhileVolumeDetached: ~
   createDefaultDiskLabeledNodes: ~
-  defaultDataPath: /export/longhorn
+  defaultDataPath: /mnt/longhorn
   defaultDataLocality: strict-local
   replicaSoftAntiAffinity: false
   replicaAutoBalance: false
