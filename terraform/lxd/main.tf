@@ -121,7 +121,7 @@ resource "lxd_instance" "rke2" {
     name = "root"
     type = "disk"
     properties = {
-      pool = lxd_storage_pool.rke1.name
+      pool = lxd_storage_pool.rke2.name
       size = "100GiB"
       path = "/"
     }
