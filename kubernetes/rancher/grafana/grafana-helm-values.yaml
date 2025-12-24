@@ -1,4 +1,13 @@
 # values.yaml
+grafana:
+  additionalDataSources:
+  - name: Tempo
+    type: tempo
+    uid: tempo
+    url: http://tempo-query-frontend.svc.cluster.local:3200
+    access: proxy
+    version: 1
+
 ingress:
   enabled: true
   ingressClassName: "cilium"
