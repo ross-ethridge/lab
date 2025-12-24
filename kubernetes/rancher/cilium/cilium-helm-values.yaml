@@ -4,8 +4,14 @@ k8sServicePort: '6443'
 ingressController:
   enabled: true
   default: true
+  metadata:
+    name: cilium-ingress-lb
+    namespace: kube-system
+    annotations:
+      service.beta.kubernetes.io/cilium-loadbalancer-ip: "72.47.146.48"
   service:
     type: LoadBalancer
+    LoadBalancerIP: "72.47.146.48"
 operator:
   replicas: 1
 hubble:
@@ -15,8 +21,6 @@ hubble:
   ui:
     enabled: true
     replicas: 1
-ipam:
-  mode: kubernetes
 gatewayAPI:
   enabled: true
 
