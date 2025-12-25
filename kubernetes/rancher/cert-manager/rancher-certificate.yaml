@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: rancher-tls
+  namespace: default
+spec:
+  secretName: rancher-tls
+  issuerRef:
+    name: letsencrypt-prod-dns
+    kind: Issuer
+  dnsNames:
+  - rancher.chingadero.com

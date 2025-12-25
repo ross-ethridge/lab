@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt-prod-dns
+  namespace: default
+spec:
+  acme:
+    email: ross.ethridge@gmail.com
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-account-key
+    solvers:
+    - dns01:
+        cloudflare:
+          email: ross.ethridge@gmail.com
+          apiTokenSecretRef:
+            name: cloudflare-api-token-secret
+            key: api-token

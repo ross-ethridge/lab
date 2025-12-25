@@ -1,0 +1,20 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: my-app-route
+  namespace: default
+spec:
+  parentRefs:
+  - name: public-gateway
+    namespace: kube-system
+    sectionName: https # Targets the 'name' of the listener in your Gateway
+  hostnames:
+  - "example.com" # Must match the hostname in your Gateway and Certificate
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: your-app-service-name
+      port: 80 # This remains 80 (the internal port of your app)
