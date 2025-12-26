@@ -21,6 +21,15 @@ hubble:
   ui:
     enabled: true
     replicas: 1
+<<<<<<< HEAD
+=======
+ipam:
+  mode: cluster-pool
+  operator:
+    clusterPoolIPv4PodCIDRList:
+      - 72.47.146.0/24
+>>>>>>> 76b6573 (Cleaning up)
 gatewayAPI:
   enabled: true
-
+l2announcements:
+  enabled: true
