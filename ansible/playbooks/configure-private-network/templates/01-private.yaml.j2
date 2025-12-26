@@ -1,0 +1,17 @@
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    {{ network_interface }}:
+      dhcp4: false
+      addresses:
+        - "{{ private_ip }}/24"
+      routes:
+        - to: default
+          via: "192.168.50.1"
+      nameservers:
+        addresses:
+          - 1.1.1.1
+          - 8.8.8.8
+        search:
+          - private.chingadero.com

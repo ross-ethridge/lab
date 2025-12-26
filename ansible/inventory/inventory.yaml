@@ -1,0 +1,20 @@
+---
+vmware:
+  hosts:
+    node1:
+      hostname: "{{ vault.node1.hostname }}"
+      ansible_host: "{{ vault.node1.private_ip }}"
+      ansible_become_pass: "{{ vault.node1.root_password }}"
+      ansible_python_interpreter: /usr/bin/python3.12
+
+    node2:
+      hostname: "{{ vault.node2.hostname }}"
+      ansible_host: "{{ vault.node2.private_ip }}"
+      ansible_become_pass: "{{ vault.node2.root_password }}"
+      ansible_python_interpreter: /usr/bin/python3.12
+
+    node3:
+      hostname: "{{ vault.node3.hostname }}"
+      ansible_host: "{{ vault.node3.private_ip }}"
+      ansible_become_pass: "{{ vault.node3.root_password }}"
+      ansible_python_interpreter: /usr/bin/python3.12

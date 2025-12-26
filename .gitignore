@@ -4,3 +4,6 @@
 **/tfplan
 **/*terraform.tfstate*
 **/env.sh
+**secrets.yaml
+**secrets.yml
+
