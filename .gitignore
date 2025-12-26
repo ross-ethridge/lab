@@ -6,4 +6,4 @@
 **/env.sh
 **secrets.yaml
 **secrets.yml
-
+**.ansible
