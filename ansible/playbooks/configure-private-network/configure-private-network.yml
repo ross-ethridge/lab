@@ -1,5 +1,5 @@
 ---
-- name: Configure private network on rpm1
+- name: Configure private network on nodes
   hosts: all
   become: true
   gather_facts: true

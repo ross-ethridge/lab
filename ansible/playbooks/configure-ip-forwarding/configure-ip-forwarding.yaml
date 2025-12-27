@@ -1,0 +1,33 @@
+---
+- name: Configure private network on nodes
+  hosts: all
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Check if IP forwarding is already enabled and uncommented
+      ansible.builtin.lineinfile:
+        path: /etc/sysctl.conf
+        regexp: '^net\.ipv4\.ip_forward\s*=\s*1'
+        line: "net.ipv4.ip_forward = 1"
+        state: present
+      check_mode: true
+      changed_when: false
+      register: ip_forward_check
+
+    - name: Ensure br_netfilter module is loaded on boot
+      ansible.builtin.lineinfile:
+        path: /etc/modules-load.d/modules.conf
+        line: "br_netfilter"
+        state: present
+
+    - name: Load br_netfilter module and enable IP forwarding
+      ansible.builtin.shell: |
+        modprobe br_netfilter
+        modprobe bridge
+        echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf
+        echo "net.bridge.bridge-nf-call-iptables = 1" >> /etc/sysctl.conf
+        sysctl -p /etc/sysctl.conf
+      args:
+        executable: /bin/bash
+      when: ip_forward_check.changed
