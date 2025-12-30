@@ -8,4 +8,12 @@
 **secrets.yml
 **.ansible
 **.vscode
-sites/*
+**_site
+**.sass-cache
+**.jekyll*
+**.bundle
+**vendor
+**Gemfile.lock
+**.DS_Store
+**.continue
+**.zip

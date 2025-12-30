@@ -1,0 +1,48 @@
+.hero-background {
+  /* Set the background image and use Jekyll's relative_url filter */
+  background-image: url("../images/chingadero-neon.png");
+  
+  /* Adjust image properties */
+  background-size: cover; /* Scales the image to cover the entire div */
+  background-position: center; /* Centers the image */
+  background-repeat: no-repeat; /* Prevents the image from tiling */
+
+  /* Ensure the div has a height so the image is visible */
+  height: 400px; /* Adjust height as needed */
+  /* Add padding or other styles for content spacing */
+  padding: 20px;
+  color: white;
+  text-shadow: 2px 2px 4px #e233bc;
+  display: flex; /* Enables flexbox layout */
+  flex-direction: column; /* Stacks children vertically */
+  justify-content: flex-start;
+  align-items: center; /* Centers children horizontally */
+}
+
+/* Posts section padding */
+.page-content-body {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Responsive padding for mobile devices */
+@media (max-width: 768px) {
+  .page-content-body {
+    padding: 20px 15px;
+  }
+  
+  .hero-background {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-content-body {
+    padding: 15px 10px;
+  }
+  
+  .hero-background {
+    padding: 10px;
+  }
+}

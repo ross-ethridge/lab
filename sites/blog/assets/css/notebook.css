@@ -1,0 +1,93 @@
+/* Tunables */
+:root {
+  --rule: 28px;            /* line spacing to match text line-height */
+  --line: rgba(56, 132, 214, 0.16); /* horizontal line color (light blue) */
+  --paper: #fcfcfb;        /* paper background */
+  --margin: 80px;          /* red margin/gutter from the left */
+  --margin-color: rgba(234, 84, 85, 0.6); /* red margin line */
+  --text: #111;
+  --content-gutter: clamp(16px, 3vw, 28px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #0e0f11;
+    --line: rgba(148, 191, 255, 0.12);
+    --margin-color: rgba(255, 123, 127, 0.5);
+    --text: #eaeef5;
+    --max-width: 640px;
+    --margin: 56px;
+  }
+}
+
+html, body {
+  height: 100%;
+  background-color: var(--paper);
+  color: var(--text);
+}
+
+/* Two-layer background:
+   1) a thin red vertical margin at --margin
+   2) repeating horizontal rules every --rule
+*/
+body {
+  line-height: var(--rule);
+  background-image:
+    linear-gradient(90deg,
+      transparent calc(var(--margin) - 1px),
+      var(--margin-color) calc(var(--margin) - 1px),
+      var(--margin-color) calc(var(--margin) + 1px),
+      transparent calc(var(--margin) + 1px)
+    ),
+    repeating-linear-gradient(
+      180deg,
+      var(--line) 0,
+      var(--line) 1px,
+      transparent 1px,
+      transparent var(--rule)
+    );
+  background-size: 100% 100%, 100% var(--rule);
+  background-attachment: fixed, fixed;
+  background-repeat: no-repeat, repeat;
+  display: grid;
+  grid-template-columns: var(--margin) 1fr;
+}
+
+/* Make common containers transparent so the lines show through.
+   Adjust selectors to your theme’s wrappers if needed. */
+main, .container, .wrapper, .page-content, .site-content, .post, .post-content {
+  background: transparent;
+}
+
+/* Optional: keep code blocks readable by adding a soft background */
+pre, code, kbd, samp {
+  background: color-mix(in oklab, var(--paper), black 3%);
+}
+
+/* Optional print: no lines when printing */
+@media print {
+  body {
+    background: white !important;
+  }
+}
+
+/* Make the hero span full-bleed across both columns */
+body > .hero-background {
+  grid-column: 1 / -1;
+}
+
+/* Place everything else inside the notebook margin (column 2) and add a little padding */
+body > :not(.hero-background) {
+  grid-column: 2;
+  padding-inline: var(--content-gutter);
+}
+
+/* If your theme wraps content in containers, keep them transparent so the lines show */
+main, .container, .wrapper, .page-content, .site-content, .post, .post-content {
+  background: transparent;
+}
+
+/* Optional: cap line length for readability */
+.post, .post-content, .page-content, main {
+  max-width: 72ch;
+}
