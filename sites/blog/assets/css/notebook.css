@@ -91,3 +91,31 @@ main, .container, .wrapper, .page-content, .site-content, .post, .post-content {
 .post, .post-content, .page-content, main {
   max-width: 72ch;
 }
+
+
+/* Allow the page to grow and scroll */
+html { height: auto; }
+
+body {
+  /* was: height: 100%; or height: 100vh; */
+  min-height: 100dvh;
+  overflow-y: auto;   /* enable vertical scroll */
+  overflow-x: hidden; /* avoid horizontal scroll if the notebook margin pushes content */
+}
+
+/* Ensure wrappers don’t clamp height or hide overflow */
+.site, .page, main, .page-content, .wrapper, .container {
+  height: auto;
+  min-height: 0;
+  overflow: visible;
+}
+
+/* If you made the header fixed, offset the content so it isn't hidden behind it.
+   Prefer sticky over fixed if possible. */
+header.site-header { position: sticky; top: 0; }
+body.has-fixed-header { padding-top: var(--header-height, 64px); }
+
+/* If your hero was fixed, make it not fixed so content can flow/scroll. */
+.hero-background {
+  position: relative; /* or static */
+}
