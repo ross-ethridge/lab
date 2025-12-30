@@ -8,3 +8,4 @@
 **secrets.yml
 **.ansible
 **.vscode
+sites/*
