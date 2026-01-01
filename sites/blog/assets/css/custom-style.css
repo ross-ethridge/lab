@@ -3,7 +3,6 @@
   background-image: url("../images/chingadero-neon.png");
   
   /* Adjust image properties */
-  background-size: cover; /* Scales the image to cover the entire div */
   background-position: center; /* Centers the image */
   background-repeat: no-repeat; /* Prevents the image from tiling */
 
@@ -27,23 +26,20 @@
 }
 
 /* Responsive padding for mobile devices */
-@media (max-width: 768px) {
-  .page-content-body {
-    padding: 20px 15px;
-  }
-  
+/* Desktop/tablet: fill width, accept some side-crop */
+@media (min-width: 641px) {
   .hero-background {
-    padding: 15px;
+    background-size: cover;
+    min-height: clamp(240px, 45vh, 560px);
   }
 }
 
-@media (max-width: 480px) {
-  .page-content-body {
-    padding: 15px 10px;
-  }
-  
+/* Mobile: show the entire neon (no side-crop) */
+@media (max-width: 640px) {
   .hero-background {
-    padding: 10px;
+    background-size: contain;        /* show whole image */
+    min-height: auto;
+    padding-block: 12px;             /* breathing room above/below */
+    background-color: #0b0c0f;       /* or your page bg to avoid gaps */
   }
 }
-
