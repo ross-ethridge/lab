@@ -5,10 +5,28 @@
 
 import boto3
 from datetime import datetime, timedelta
-
-client = boto3.client('ec2', region_name='us-east-2')
+import argparse
 
 def main():
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description="A script to query AWS EC2 Spot Instance Price History.")
+    parser.add_argument(
+        '--region',
+        type=str,
+        default='us-east-2',
+        help='AWS region to query (default: us-east-2)'
+    )
+    parser.add_argument(
+        '--instance-type',
+        type=str,
+        default='m5.large',
+        help='EC2 instance type to query (default: m5.large)'
+    )
+    args = parser.parse_args()
+
+    # Create EC2 client
+    client = boto3.client('ec2', region_name=args.region)
+
     # Query recent spot price history
     end_time = datetime.now()
     start_time = end_time - timedelta(days=1)  # Last 24 hours
@@ -17,7 +35,7 @@ def main():
         DryRun=False,
         StartTime=start_time,
         EndTime=end_time,
-        InstanceTypes=['m5.large'],
+        InstanceTypes=[args.instance_type],
         ProductDescriptions=['Linux/UNIX'],
         MaxResults=10,
     )
