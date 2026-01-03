@@ -1,0 +1,20 @@
+---
+---
+
+<html>
+  <head>
+    <title>IP Address API</title>
+  </head>
+  <body>
+  <script src="http://chingadero.com/assets/js/ip.js"></script>
+    <script>
+      fetch('/api/ip')
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('ip-display').textContent = data.ip;
+      });
+      
+    </script>
+  <div id="ip-display"></div>
+  </body>
+</html>
