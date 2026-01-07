@@ -1,45 +1,42 @@
 ---
 layout: post
-title:  A Serverless Blog For Free
-date:   2025-12-27 14:49:48 -0600
+title:  Build a free, serverless blog with Cloudflare Pages, Jekyll, and R2
+date:   2026-01-02 14:00:00 -0600
 categories: Programming
 ---
 
-I'll show you how to build a secure site hosted for free on Cloudflare using their S3-like storage called R2 and their workers/pages platform. The free tier Cloudflare account offers all of this, so we wont pay anything, except for your domain registration. The site you are reading right now is deployed using this very method so I know it works.
+You can host a fast, secure blog for free using:
+- Cloudflare Pages for static hosting and Functions
+- Jekyll for static site generation
+- Optional: Cloudflare R2 for object storage (images, downloads, or future API-backed content)
+- Wrangler for local testing
 
-## The stack
+You’ll pay only for your domain. The process below is exactly what I use to deploy the site you’re reading.
 
-- Cloudflare free account for R2 blob storage, pages to host frontend, and DNS.
-- Jekyll for content rendereing (Same backend used for Github Pages)
-- Wrangler (cloudflare CLI for testing pages)
+Why this stack
+- Jekyll turns Markdown into static pages that are simple to build and version in Git.
+- Cloudflare Pages serves those files at the edge and can run Functions for dynamic features—no servers to patch or scale.
+- R2 stores static assets or data you want to fetch at runtime (e.g., via a Worker or Pages Function) without egress fees to Cloudflare services.
 
-Jekyll gives you fast, static pages. Cloudflare Pages adds serverless functions so you can handle dynamic bits without running a server.
+What you’ll build
+- A Jekyll site
+- Local preview with Wrangler
+- A Pages project you can deploy by uploading a ZIP of your built site
+- Optional: R2 ready for future dynamic content or asset storage
 
-## What we’ll build
-
-- A jekyll site
-- Deploy it to CloudFlare
-
-## Why this works well on Cloudflare
-
-- Functions run at the edge, close to your users—typically very low latency.
-- No server to manage, and your Jekyll build stays the same.
-
-## Prereqs
-
+Prerequisites
 - Ruby
-  - <https://www.ruby-lang.org/en/documentation/installation/>
-
+  - <a href="https://www.ruby-lang.org/en/documentation/installation/" target="_blank"> Install Ruby </a>
 - Jekyll
-  - <https://jekyllrb.com/docs/>
+  - <a href="https://jekyllrb.com/docs/" target="_blank"> Install Jekyll </a>
+- Cloudflare account and a domain
+  - <a href="https://developers.cloudflare.com/fundamentals/account/create-account/" target="_blank"> Cloudflare Accounts </a>
+  - <a href="https://www.cloudflare.com/products/registrar/" target="_blank"> Cloudflare Domains </a>
+- Wrangler CLI (installed a bit later)
 
-- Cloudflare account and a domain.
-  - <https://developers.cloudflare.com/fundamentals/account/create-account/>
-  - <https://www.cloudflare.com/products/registrar/>
-  
-## Testing locally
+## Build locally
 
-Hopefully you have Jekyll installed and we can make a demo site.
+I'll show you how to create and preview a Jekyll site locally.
 
 ```bash
 # Install Jekyll & Bundler
@@ -48,131 +45,126 @@ gem install jekyll bundler
 # Create a new site
 jekyll new myblog
 
-# Change into that blog directory
+# Move into the project
 cd myblog
 
-# Serve the site
+# Serve locally
 bundle exec jekyll serve
+# Visit http://127.0.0.1:4000/
 
-# Check your work at the local url on port 4000
-Server address: http://127.0.0.1:4000/
-
+# To serve on all sddresses so its viewable on the network; add --host
+bundle exec jekyll serve --host 0.0.0.0
 ```
+### Build vs serve
 
-All the static files are built and served out of the ```_site``` directory inside your project
-
-To publish your site all you have to do is copy all the files from ```_site``` up to the bucket or http server.
-
-To build the site without serving it locally, you use the ```jekyll build``` command.
+Jekyll outputs the production-ready site to the ```_site``` directory.
+Use ```serve``` for local preview.  
+Use ```build``` when you’re ready to deploy.
 
 ```bash
+# Build for production (outputs to _site)
 bundle exec jekyll build
-# Then copy all the files from _site
+# Then deploy whatever’s inside _site
 ```
 
-## Put it all together
+## Test with Cloudflare Wrangler (Pages emulation)
+Preview your Pages deployment locally with Wrangler.  
+Wrangler simulates Cloudflare Pages so you can test the exact build output.
 
-Ok lets build our site and add our scripts to make it dynamic and implement an API feature, all hosted on R2 buckets.
+Install Wrangler:
+- <a href="https://developers.cloudflare.com/workers/wrangler/install-and-update/" target="_blank"> Install Wrangler </a>
 
-Using Cloudflare's Wrangler CLI we can now test our pages site locally.
-
-- Install Wrangler
+Build your site with Jekyll (don’t run the Jekyll server for this step).  
+Run the Pages emulator against the ```_site``` folder.  
 
 ```bash
-npm install -g wrangler 
+# From your project root
+bundle exec jekyll build
+
+# Emulate Cloudflare Pages locally on port 8788, serving from the _site directory
+wrangler pages dev _site
+
+# Output will include a local URL like:
+# Ready on http://localhost:8788
 ```
 
-- We build the site with Jekyll (not serve it).
-- Then serve the site with Wrangler, which emulates Cloudflare pages from the ```_site``` directory
+## Create a Cloudflare Pages project
 
-```bash
- wrangler pages dev _site
-
- ⛅️ wrangler 4.54.0
-
-# Access the server locally on port 8788
-⎔ Starting local server...
-[wrangler:info] Ready on http://localhost:8788
-```
-
-## Create a Cloudflare page deployment
-
-<https://developers.cloudflare.com/pages/>
-
-- Log into Cloudflare
-- Go to the **Workers and Pages** section (use search, there are lots of products)
-- Create a new application and choose **Upload Static Files** as the deployment option.
-- Once the DNS record is linked to your R2 bucket you are ready to upload a zip file of your site.
-
-## Zip your site into a single file for deployment on Cloudflare pages
-
-- Create a zip file that contains all the contents of your ```_site``` folder.
-- zip all the contents (recursively) and put the archive in the parent directory.
+- Sign in: <a href="https://developers.cloudflare.com/pages/" target="_blank"> Cloudflare Pages </a>
+- Go to Workers & Pages.
+- Create a new application and choose Upload Static Files.
+- You’ll later connect your domain to the Pages project (custom domain).  
+R2 is optional and useful when you want object storage (e.g., images or data) that you read via a Function or Worker.  
+Prepare a ZIP for upload Zip everything inside ```_site``` and upload it as a deployment.
 
 ```bash
 cd _site
-zip -r ../chingadero-dot-com.zip *
+zip -r ../myblog-site.zip *
 ```
 
-## Create a new pages deployment
+## Deploy from the Pages dashboard
 
-- From the Cloudflare Pages control panel click the app you just created.
-- Select **Create Deployment**
-- Upload the zip file of the _site directory.
+- Open your Pages app in the Cloudflare dashboard
+- Click Create deployment.
+- Upload the ZIP you created from ```_site```.
+- Finish the deployment flow, then attach your custom domain to the Pages project.
 
-![Cloudflare Deployment Page](/assets/images/cf-deploy.png "Upload zip file")
+## Add posts and republish
 
-- Click through the **Save Deployment** button and you are done.
+Jekyll looks for posts in ```_posts``` with a specific naming format and front matter.  
+Add a Markdown file, rebuild, and upload a fresh ZIP.
 
-## Creating addition posts
-
-To create additional posts for your site you add a ```markdown``` file to the ```_posts``` directory and re-publish the site. The files require a special naming structure and front-matter.
-
-```bash
-tree -L 1
+```text
 .
 ├── _config.yml
 ├── _includes
 ├── _layouts
-├── _posts # <== Markdown goes here
-├── _site
+├── _posts           # Your Markdown posts go here
+├── _site            # Build output (don’t edit directly)
 ├── 404.html
 ├── about.markdown
-├── api
 ├── assets
-├── functions
+├── functions        # Optional: add Pages Functions here
 ├── Gemfile
 ├── Gemfile.lock
 ├── index.markdown
-├── node_modules
 └── vendor
-
 ```
 
-- Files must me named like ```<yyyy>-<mm>-<dd>-<post-title>.md```
+Post filenames must follow: ```YYYY-MM-DD-title.md```
 
-Example:
-
-```bash
-_posts/2026-01-02-Serverless-Blog.md
+```text
+_posts/2026-01-02-serverless-blog.md
 ```
 
-The Front Matter of the markdown document needs to have a layout type of ```post```, a ```title```, and a ```date```.  
-The ```categories``` are optional but helpful for slugs.
+Each post needs front matter with layout, title, and date; categories are optional.  
+The front matter looks like:
 
-```yaml
+```text
 ---
 layout: post
 title:  A Serverless Blog For Free
 date:   2025-12-27 14:49:48 -0600
 categories: Programming
 ---
-<content below>
+Your post content starts here as markdpwn content
+
 ```
 
-## Conclusion
+## Where R2 fits in
 
-I hope you enjoyed this little tutorial on getting a free site running in Cloudflare using Jekyll to build the static content.  
-Its secure as there is no server to hack and all the content can be versioned in a git repo if you wanted to take it a step further.  
+For a basic blog, you can deploy entirely with Pages and never touch R2.  
+Add R2 if you want:
+- Large media or download storage
+- A data bucket fetched at runtime by a Worker or Pages Function
+- A place to push content from CI without egress charges to Cloudflare services
+
+You can bind an R2 bucket to a Pages Function or Worker and fetch objects as needed.  
+Keep static pages in Pages; put dynamic or large assets in R2.
+
+## Wrap-up
+That’s it: a cost-free, secure, and fast blog at the edge.  
+You write Markdown, Jekyll builds static pages, and Cloudflare Pages serves them globally.  
+If you later need dynamic features or storage, add a Pages Function and R2 without changing your basic deployment flow.  
 
 Enjoy!
