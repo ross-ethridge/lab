@@ -20,7 +20,7 @@
 
 title: Chingadero.Com
 email: mismo@chingadero.com
-baseurl: "" # the subpath of your site, e.g. /blog
+baseurl: "/" # the subpath of your site, e.g. /blog
 url: "https://chingadero.com" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: MismoChingadero
 github_username:  ross-ethridge
