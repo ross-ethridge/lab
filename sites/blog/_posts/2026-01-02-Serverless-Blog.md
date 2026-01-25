@@ -2,7 +2,7 @@
 layout: post
 title:  Build a free, serverless blog with Cloudflare Pages, Jekyll, and R2
 date:   2026-01-02 14:00:00 -0600
-categories: Programming
+categories: Code
 ---
 
 You can host a fast, secure blog for free using:

@@ -1,11 +1,9 @@
 ---
 layout: page
-title:  Mix Sets
-date:   2026-01-25 00:00:00 -0600
-categories: Music
+title: Music
+permalink: /music/
+description: I like to mix vinyl.
 ---
-
-## Mix Sets (Vinyl)
 
 <div style="text-align: center; padding: 20px 0;">
 <h2> Grey </h2>
