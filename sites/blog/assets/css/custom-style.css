@@ -43,3 +43,68 @@
     background-color: #0b0c0f;       /* or your page bg to avoid gaps */
   }
 }
+
+/* Center music page embeds by making content full width */
+.music .entry-content {
+  width: 100% !important;
+  max-width: 100% !important;
+  float: none !important;
+  margin: 0 auto;
+}
+
+/* Music grid layout - updated for centering */
+.music-grid {
+  display: grid;
+  gap: 30px;
+  padding: 20px;
+  max-width: 100% !important; /* Overrides the 72ch limit from the other file */
+  margin: 0 auto;
+  justify-content: center;    /* Centers the columns themselves */
+  justify-items: center;      /* Centers the items inside the columns */
+}
+
+/* Mobile - single column */
+@media (max-width: 767px) {
+  .music-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Tablet - two columns */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .music-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Desktop - two columns (keeps items at readable size) */
+@media (min-width: 1200px) {
+  .music-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Music item styling - updated to center the iframe */
+.music-item {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;        /* Centers the iframe horizontally */
+  width: 100%;
+}
+
+.music-item iframe {
+  width: 100%;
+  max-width: 560px;           /* Prevents iframes from getting too wide on desktop */
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: block;
+  margin: 0 auto;             /* Traditional centering fallback */
+}
+
+/* Ensure the container is allowed to be wide */
+.music .entry-content {
+  width: 100% !important;
+  max-width: 1200px !important; /* Allow it to be wider than 72ch */
+  margin: 0 auto;
+}
