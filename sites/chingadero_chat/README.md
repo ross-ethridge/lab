@@ -1,24 +1,47 @@
-# README
+# Chingadero Chat
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A Rails chat app that talks to Google Gemini. Type a message, get a response. The full conversation history is sent with each request so Gemini has context.
 
-Things you may want to cover:
+## Stack
 
-* Ruby version
+- Ruby on Rails 8.1
+- PostgreSQL
+- Google Gemini 2.5 Flash API
+- Solid Cable (Action Cable backend)
+- Docker / Docker Compose
 
-* System dependencies
+## Requirements
 
-* Configuration
+- Docker and Docker Compose
+- A [Google AI Studio](https://aistudio.google.com/) API key
 
-* Database creation
+## Setup
 
-* Database initialization
+**1. Create a `.env` file:**
 
-* How to run the test suite
+```
+GEMINI_API_KEY=your_api_key_here
+POSTGRES_USER=chingadero_chat
+POSTGRES_PASSWORD=your_password_here
+SECRET_KEY_BASE=your_secret_key_base_here
+```
 
-* Services (job queues, cache servers, search engines, etc.)
+Generate a secret key base with:
+```
+openssl rand -hex 64
+```
 
-* Deployment instructions
+**2. Build and create the databases:**
 
-* ...
+```
+docker compose -f docker-compose.prod.yaml build web
+docker compose -f docker-compose.prod.yaml run --rm web bin/rails db:prepare
+```
+
+**3. Start the app:**
+
+```
+docker compose -f docker-compose.prod.yaml up -d
+```
+
+The app runs on `http://localhost`.
