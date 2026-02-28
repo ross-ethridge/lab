@@ -1,8 +1,8 @@
-version: '3.8'
-
+# docker-compose.prod.yml
 services:
   db:
     image: postgres:16
+    restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
@@ -14,19 +14,17 @@ services:
   web:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
+    restart: always
     ports:
-      - "3000:3000"
-    # This mounts your local code into the container so you don't have to 
-    # rebuild the container every time you change a Ruby file!
-    volumes:
-      - .:/app
-    # Tells Docker to pass your .env file into the container
+      - "80:3000"
     env_file:
       - .env
-    # Override the DB_HOST to point to the Postgres container
     environment:
+      - RAILS_ENV=production
       - DB_HOST=db
+      - RAILS_SERVE_STATIC_FILES=true
+      - RAILS_LOG_TO_STDOUT=true
     depends_on:
       - db
 

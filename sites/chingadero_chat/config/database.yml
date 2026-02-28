@@ -2,9 +2,9 @@ default: &default
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  host: localhost
-  username: <%= ENV.fetch("POSTGRES_USER") %>
-  password: <%= ENV.fetch("POSTGRES_PASSWORD") %>
+  host: <%= ENV.fetch("DB_HOST", "localhost") %>
+  username: <%= ENV.fetch("POSTGRES_USER", "postgres") %>
+  password: <%= ENV.fetch("POSTGRES_PASSWORD", "dummy_password") %>
 
 development:
   <<: *default
@@ -15,7 +15,18 @@ test:
   database: gemini_chat_test
 
 production:
-  <<: *default
-  database: gemini_chat_production
-  username: gemini_chat
-  password: <%= ENV["GEMINI_CHAT_DATABASE_PASSWORD"] %>
+  primary:
+    <<: *default
+    database: chingadero_chat_production
+  cable:
+    <<: *default
+    database: chingadero_chat_cable_production
+    migrations_paths: db/cable_migrate
+  queue:
+    <<: *default
+    database: chingadero_chat_queue_production
+    migrations_paths: db/queue_migrate
+  cache:
+    <<: *default
+    database: chingadero_chat_cache_production
+    migrations_paths: db/cache_migrate
