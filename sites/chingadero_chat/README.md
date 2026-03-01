@@ -1,12 +1,13 @@
 # Chingadero Chat
 
-A Rails chat app that talks to Google Gemini, with a local Stable Diffusion image generator running on your GPU.
+A Rails chat app that talks to Google Gemini or Anthropic Claude, with a local Stable Diffusion image generator running on your GPU.
 
 ## Stack
 
 - Ruby on Rails 8.1
 - PostgreSQL
 - Google Gemini 2.5 Flash API (chat)
+- Anthropic Claude API — Sonnet 4.6 or Opus 4.6 (chat)
 - Stable Diffusion 1.5 via local FastAPI/PyTorch service (image generation)
 - Docker / Docker Compose
 
@@ -15,6 +16,7 @@ A Rails chat app that talks to Google Gemini, with a local Stable Diffusion imag
 - Docker and Docker Compose
 - An NVIDIA GPU with the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) installed and configured
 - A [Google AI Studio](https://aistudio.google.com/) API key (Free Tier)
+- An [Anthropic](https://console.anthropic.com/) API key (optional — only needed if you want to use Claude)
 - A [HuggingFace](https://huggingface.co/) account and API token (Free Tier, just so you can download Stable Diffusion)
 
 ### NVIDIA Container Toolkit (WSL2 / Linux)
@@ -42,6 +44,7 @@ sudo service docker restart
 
 ```
 GEMINI_API_KEY=your_gemini_api_key
+ANTHROPIC_API_KEY=your_anthropic_api_key   # optional — only needed for Claude
 HF_TOKEN=your_huggingface_token
 POSTGRES_USER=chingadero_chat
 POSTGRES_PASSWORD=your_password_here
@@ -82,9 +85,20 @@ Wait for `Uvicorn running on http://0.0.0.0:8000` before trying to generate imag
 ## Features
 
 ### Chat
-Talk to Google Gemini 2.5 Flash. The full conversation history is sent with each request so Gemini has context. The app works on the [free tier of Google AI Studio](https://aistudio.google.com/) — no billing setup required.
+Talk to Google Gemini 2.5 Flash or Anthropic Claude. The full conversation history is sent with each request so the model has context.
+
+Use the toggle in the chat header to switch providers at any time — your choice is remembered for the session.
+
+**Gemini** runs on the [free tier of Google AI Studio](https://aistudio.google.com/) — no billing setup required.
+
+**Claude** requires an [Anthropic API key](https://console.anthropic.com/) and offers two model options selectable from the header:
+- **Sonnet 4.6** — fast and capable (default)
+- **Opus 4.6** — most capable, slower
+
+### Conversations
+Each chat is saved as a named conversation. The sidebar lists all past conversations; click any to resume it, or use **+ New Chat** to start fresh. Conversations are auto-titled from the first message and can be deleted individually.
 
 ### Image Generation
-Click **🎨 Generate Image** from the chat header to open the image generator. Enter a prompt, click **Generate & Download**, and the image will be rendered locally by Stable Diffusion 1.5 on your GPU and displayed in the browser. A download link is provided below the image.
+Click **Generate Image** from the chat header to open the image generator. Enter a prompt, click **Generate & Download**, and the image will be rendered locally by Stable Diffusion 1.5 on your GPU and displayed in the browser. A download link is provided below the image.
 
 Images are generated entirely on your machine — nothing is sent to any external image API.
