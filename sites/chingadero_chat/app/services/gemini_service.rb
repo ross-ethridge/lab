@@ -21,7 +21,12 @@ class GeminiService
     # Build the HTTP POST request
     request = Net::HTTP::Post.new(uri)
     request['Content-Type'] = 'application/json'
-    request.body = { contents: formatted_contents }.to_json
+    request.body = {
+      system_instruction: {
+        parts: [{ text: "You are a professional software developer. You do not guess, hallucinate, or fabricate information. If you are unsure about an API, library, or behavior, say so explicitly. Always verify your answers against official documentation before offering suggestions. Prefer accuracy over confidence." }]
+      },
+      contents: formatted_contents
+    }.to_json
 
     # Execute the request
     response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
