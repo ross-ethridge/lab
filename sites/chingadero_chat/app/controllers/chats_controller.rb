@@ -1,26 +1,45 @@
 class ChatsController < ApplicationController
+  before_action :set_conversation
+
   def index
-    # Load the whole conversation to display on the screen
-    @messages = Message.order(:created_at)
+    @messages = @conversation.messages.order(:created_at)
+    @conversations = Conversation.order(created_at: :desc)
+    @ai_model     = session[:ai_model]     || 'gemini'
+    @claude_model = session[:claude_model] || 'sonnet'
   end
 
   def create
     user_content = params[:content]
     return redirect_to chats_path if user_content.blank?
 
-    # 1. Save the user's prompt
-    Message.create!(role: 'user', content: user_content)
+    Message.create!(role: 'user', content: user_content, conversation: @conversation)
 
-    # 2. Fetch the updated conversation history
-    history = Message.order(:created_at).to_a
+    # Auto-title from the first user message
+    if @conversation.title.blank?
+      @conversation.update!(title: user_content.truncate(60))
+    end
 
-    # 3. Pass history to Gemini API (our service object)
-    ai_response = GeminiService.new.call(history)
+    history = @conversation.messages.order(:created_at).to_a
+    service = session[:ai_model] == 'claude' ? ClaudeService.new(model: session[:claude_model] || 'sonnet') : GeminiService.new
+    ai_response = service.call(history)
 
-    # 4. Save Gemini's response
-    Message.create!(role: 'model', content: ai_response)
+    Message.create!(role: 'model', content: ai_response, conversation: @conversation)
 
-    # Reload the page to show the new messages
     redirect_to chats_path
+  end
+
+  private
+
+  def set_conversation
+    if params[:conversation_id].present?
+      session[:conversation_id] = params[:conversation_id].to_i
+    end
+
+    @conversation = Conversation.find_by(id: session[:conversation_id])
+
+    if @conversation.nil?
+      @conversation = Conversation.create!
+      session[:conversation_id] = @conversation.id
+    end
   end
 end
